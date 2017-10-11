@@ -556,7 +556,7 @@ if ( ! function_exists( 'storefront_product_categories' ) ) {
 				'columns' 			=> 3,
 				'child_categories' 	=> 0,
 				'orderby' 			=> 'name',
-				'title'				=> __( 'Shop by Category', 'storefront' ),
+				'title'				=> __( 'Colecciones', 'storefront' ),
 			) );
 
 			$shortcode_content = storefront_do_shortcode( 'product_categories', apply_filters( 'storefront_product_categories_shortcode_args', array(
@@ -606,7 +606,7 @@ if ( ! function_exists( 'storefront_recent_products' ) ) {
 			$args = apply_filters( 'storefront_recent_products_args', array(
 				'limit' 			=> 4,
 				'columns' 			=> 4,
-				'title'				=> __( 'New In', 'storefront' ),
+				'title'				=> __( 'Novedades', 'storefront' ),
 			) );
 
 			$shortcode_content = storefront_do_shortcode( 'recent_products', apply_filters( 'storefront_recent_products_shortcode_args', array(
@@ -656,7 +656,7 @@ if ( ! function_exists( 'storefront_featured_products' ) ) {
 				'columns' => 4,
 				'orderby' => 'date',
 				'order'   => 'desc',
-				'title'   => __( 'We Recommend', 'storefront' ),
+				'title'   => __( 'Recomendado', 'storefront' ),
 			) );
 
 			$shortcode_content = storefront_do_shortcode( 'featured_products', apply_filters( 'storefront_featured_products_shortcode_args', array(
@@ -754,7 +754,7 @@ if ( ! function_exists( 'storefront_on_sale_products' ) ) {
 			$args = apply_filters( 'storefront_on_sale_products_args', array(
 				'limit'   => 4,
 				'columns' => 4,
-				'title'   => __( 'On Sale', 'storefront' ),
+				'title'   => __( 'Rebajas', 'storefront' ),
 			) );
 
 			$shortcode_content = storefront_do_shortcode( 'sale_products', apply_filters( 'storefront_on_sale_products_shortcode_args', array(
@@ -801,7 +801,7 @@ if ( ! function_exists( 'storefront_best_selling_products' ) ) {
 			$args = apply_filters( 'storefront_best_selling_products_args', array(
 				'limit'   => 4,
 				'columns' => 4,
-				'title'	  => esc_attr__( 'Best Sellers', 'storefront' ),
+				'title'	  => esc_attr__( 'Más Vendidos', 'storefront' ),
 			) );
 
 			$shortcode_content = storefront_do_shortcode( 'best_selling_products', apply_filters( 'storefront_best_selling_products_shortcode_args', array(
