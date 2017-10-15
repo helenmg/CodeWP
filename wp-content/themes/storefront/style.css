@@ -537,7 +537,6 @@ body {
     display: block
 }
 
-.site-header .custom-logo-link img,
 .site-header .site-logo-anchor img,
 .site-header .site-logo-link img {
     max-width: 1024px
@@ -1823,7 +1822,7 @@ button.menu-toggle:after {
     }
     .site-header .site-branding {
         display: block;
-        width: 100%;
+        width: 45%;
         float: left;
         margin-right: 4.347826087%;
         clear: both
@@ -1842,6 +1841,7 @@ button.menu-toggle:after {
         width: 21.7391304348%;
         float: right;
         margin-right: 0;
+        margin-top: 60px;
         clear: none
     }
     .woocommerce-active .site-header .main-navigation {

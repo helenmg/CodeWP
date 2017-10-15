@@ -179,8 +179,11 @@ if ( ! function_exists( 'storefront_site_title_or_logo' ) ) {
 	 */
 	function storefront_site_title_or_logo( $echo = true ) {
 		if ( function_exists( 'the_custom_logo' ) && has_custom_logo() ) {
-			$logo = get_custom_logo();
-			$html = is_home() ? '<h1 class="logo">' . $logo . '</h1>' : $logo;
+			$custom_logo_id = get_theme_mod( 'custom_logo' );
+			$custom_logo_attachment = wp_get_attachment_image_src( $custom_logo_id , 'full' );
+			$custom_logo = '<img src="'. esc_url( $custom_logo_attachment[0] ) .'" class="custom-logo" alt="Picaros" itemprop="logo">';
+			$inner_html = '<a href="/" class="custom-logo-link" rel="home" itemprop="url">' . $custom_logo . '</a>';
+			$html = is_home() ? '<h1 class="logo">' . $inner_html . '</h1>' : $inner_html;
 		} elseif ( function_exists( 'jetpack_has_site_logo' ) && jetpack_has_site_logo() ) {
 			// Copied from jetpack_the_site_logo() function.
 			$logo    = site_logo()->logo;
