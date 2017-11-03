@@ -187,9 +187,9 @@ class SmartSlider3 {
 
         if (is_multisite() && $network_wide) {
             $tmpPrefix = $wpdb->prefix;
-            $blogs     = function_exists('wp_get_sites') ? wp_get_sites(array('network_id' => $wpdb->siteid)) : get_blog_list(0, 'all');
+            $blogs     = get_sites(array('network_id' => $wpdb->siteid));
             foreach ($blogs AS $blog) {
-                $wpdb->prefix = $wpdb->get_blog_prefix($blog['blog_id']);
+                $wpdb->prefix = $wpdb->get_blog_prefix($blog->blog_id);
 
                 N2Base::getApplication("smartslider")
                       ->getApplicationType('backend')

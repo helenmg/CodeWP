@@ -48,7 +48,7 @@ class N2SmartsliderSlidesModel extends N2Model {
 
         return array(
             'title'        => $slide['title'],
-            'slide'        => ($base64 ? base64_decode($slide['slide']) : $slide['slide']),
+            'slide'        => ($base64 ? n2_base64_decode($slide['slide']) : $slide['slide']),
             'description'  => $slide['description'],
             'thumbnail'    => $slide['thumbnail'],
             'published'    => (isset($slide['published']) ? $slide['published'] : 0),
@@ -133,7 +133,7 @@ class N2SmartsliderSlidesModel extends N2Model {
         $data['publishdates'] = isset($data['publishdates']) ? $data['publishdates'] : ((isset($data['publish_up']) ? $data['publish_up'] : '') . '|*|' . (isset($data['publish_down']) ? $data['publish_down'] : ''));
 
         if (isset($data['slide'])) {
-            $data['slide'] = base64_encode($data['slide']);
+            $data['slide'] = n2_base64_encode($data['slide']);
         }
 
         $form->loadArray($data);
@@ -247,7 +247,7 @@ class N2SmartsliderSlidesModel extends N2Model {
 
         $this->db->update(array(
             'title'        => $slide['title'],
-            'slide'        => ($base64 ? base64_decode($slide['slide']) : $slide['slide']),
+            'slide'        => ($base64 ? n2_base64_decode($slide['slide']) : $slide['slide']),
             'description'  => $slide['description'],
             'thumbnail'    => $slide['thumbnail'],
             'published'    => (isset($slide['published']) ? $slide['published'] : 0),

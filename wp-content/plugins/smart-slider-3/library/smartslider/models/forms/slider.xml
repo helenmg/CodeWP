@@ -116,6 +116,12 @@
     </params>
     <params name="loading" type="groupped" label="Loading">
       <params name="loading-core" label="" hidetitle="1">
+        <param type="group" label="Play when visible">
+          <param name="playWhenVisible" type="onoff" label="Enabled" default="1"/>
+          <param name="playWhenVisibleAt" type="number" label="At" default="50" style="width:30px;">
+            <unit>%</unit>
+          </param>
+        </param>
         <param type="number" name="dependency" label="Pre loaded slider ID" tip="The current slider will not start loading until the set slider is loaded completely."/>
         <param name="delay" type="number" label="Delay" default="0" style="width:30px;">
           <unit value="ms">ms</unit>

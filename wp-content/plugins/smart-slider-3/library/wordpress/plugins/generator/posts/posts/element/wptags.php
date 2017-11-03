@@ -6,7 +6,9 @@ class N2ElementWPTags extends N2ElementList
 {
 
     function fetchElement() {
-        $terms = get_terms('post_tag');
+        $terms = get_terms('post_tag', array(
+            'hide_empty' => false,
+        ));
         $this->_xml->addChild('option', 'All')
                    ->addAttribute('value', 0);
         if (count($terms)) {

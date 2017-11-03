@@ -52,7 +52,7 @@ class N2SmartSliderFeatureFadeOnLoad {
                     return N2Html::tag("div", array(
                         "id"     => $this->slider->elementId . "-placeholder",
                         "encode" => false,
-                        "style"  => 'position: relative;z-index:2;'
+                        "style"  => 'position: relative;z-index:2;color:RGBA(0,0,0,0);'
                     ), $this->makeImage($sizes));
                 } else {
                     N2CSS::addCode("#{$this->slider->elementId} .n2-ss-load-fade{position: relative !important;}", $this->slider->cacheId);
@@ -96,7 +96,7 @@ class N2SmartSliderFeatureFadeOnLoad {
 
     private function transparentImage($width, $height) {
 
-        return base64_encode('<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="' . $width . '" height="' . $height . '" ></svg>');
+        return n2_base64_encode('<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="' . $width . '" height="' . $height . '" ></svg>');
     }
 
     private static function gcd($a, $b) {

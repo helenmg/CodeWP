@@ -205,10 +205,15 @@ class N2SmartSliderWidgets {
             foreach ($this->enabledWidgets AS $k => $v) {
                 $class = 'N2SSPluginWidget' . $k . $v;
 
-                $this->widgets[$k] = call_user_func(array(
+                $rendered = call_user_func(array(
                     $class,
                     'render'
                 ), $slider, $slider->elementId, $params);
+                if (is_array($rendered)) {
+                    $this->widgets = array_merge($this->widgets, $rendered);
+                } else {
+                    $this->widgets[$k] = $rendered;
+                }
             }
             foreach ($this->above AS $name) {
                 $this->aboveHTML .= $this->widgets[$name] . "\n";

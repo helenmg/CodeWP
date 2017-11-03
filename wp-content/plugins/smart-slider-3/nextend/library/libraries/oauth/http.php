@@ -1284,7 +1284,7 @@ class N2HTTP {
                     if (strlen($body) == 0) break;
                 }
             }
-            $authorization_value                         = $sasl->mechanism . (IsSet($message) ? " " . ($sasl->encode_response ? base64_encode($message) : $message) : "");
+            $authorization_value                         = $sasl->mechanism . (IsSet($message) ? " " . ($sasl->encode_response ? n2_base64_encode($message) : $message) : "");
             $request_arguments                           = $this->request_arguments;
             $arguments                                   = $request_arguments;
             $arguments["Headers"][$authorization_header] = $authorization_value;
@@ -1334,7 +1334,7 @@ class N2HTTP {
                 } while ($status == SASL_INTERACT);
                 switch ($status) {
                     case SASL_CONTINUE:
-                        $authorization_value                         = $sasl->mechanism . (IsSet($message) ? " " . ($sasl->encode_response ? base64_encode($message) : $message) : "");
+                        $authorization_value                         = $sasl->mechanism . (IsSet($message) ? " " . ($sasl->encode_response ? n2_base64_encode($message) : $message) : "");
                         $arguments                                   = $request_arguments;
                         $arguments["Headers"][$authorization_header] = $authorization_value;
                         if (!$proxy && strlen($proxy_authorization)) $arguments["Headers"]["Proxy-Authorization"] = $proxy_authorization;

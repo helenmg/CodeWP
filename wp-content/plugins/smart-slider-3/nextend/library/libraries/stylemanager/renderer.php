@@ -37,7 +37,7 @@ class N2StyleRenderer {
 
                     $decoded = $style['value'];
                     if ($decoded[0] != '{') {
-                        $decoded = base64_decode($decoded);
+                        $decoded = n2_base64_decode($decoded);
                     }
 
                     $value = json_decode($decoded, true);
@@ -63,9 +63,9 @@ class N2StyleRenderer {
         } else if ($style != '') {
             $decoded = $style;
             if ($decoded[0] != '{') {
-                $decoded = base64_decode($decoded);
+                $decoded = n2_base64_decode($decoded);
             } else {
-                $style = base64_encode($decoded);
+                $style = n2_base64_encode($decoded);
             }
 
             $value = json_decode($decoded, true);
@@ -111,6 +111,8 @@ class N2StyleRenderer {
         return str_replace($search, $replace, $template);
     }
 }
+
+$frontendAccessibility = intval(N2Settings::get('frontend-accessibility', 1));
 
 N2StyleRenderer::$mode = array(
     '0'              => array(
@@ -168,9 +170,12 @@ N2StyleRenderer::$mode = array(
             'combined' => true
         ),
         'preview'       => '<div><a style="display:inline-block; margin:20px;" class="{styleClassName}" href="#" onclick="return false;">Button</a></div>',
-        'selectors'     => array(
+        'selectors'     => $frontendAccessibility ? array(
             '@pre@selector'                                                  => '@tab0',
             '@pre@selector:Hover, @pre@selector:ACTIVE, @pre@selector:FOCUS' => '@tab1'
+        ) : array(
+            '@pre@selector, @pre@selector:FOCUS'        => '@tab0',
+            '@pre@selector:Hover, @pre@selector:ACTIVE' => '@tab1'
         )
     ),
     'heading'        => array(
@@ -184,9 +189,12 @@ N2StyleRenderer::$mode = array(
             'combined' => true
         ),
         'preview'       => '<div class="{styleClassName}">Heading</div>',
-        'selectors'     => array(
+        'selectors'     => $frontendAccessibility ? array(
             '@pre@selector'                                                  => '@tab0',
             '@pre@selector:Hover, @pre@selector:ACTIVE, @pre@selector:FOCUS' => '@tab1'
+        ) : array(
+            '@pre@selector, @pre@selector:FOCUS'        => '@tab0',
+            '@pre@selector:Hover, @pre@selector:ACTIVE' => '@tab1'
         )
     ),
     'heading-active' => array(

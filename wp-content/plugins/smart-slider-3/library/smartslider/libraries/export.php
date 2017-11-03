@@ -159,9 +159,7 @@ class N2SmartSliderExport {
             $zip->addFile(serialize($this->backup), 'data');
 
             if (!$saveAsFile) {
-                while (ob_list_handlers()) {
-                    ob_end_clean();
-                }
+                n2_ob_end_clean_all();
                 header('Content-disposition: attachment; filename*=UTF-8\'\'' . rawurlencode($this->backup->slider['title'] . '.ss3'));
                 header('Content-type: application/zip');
                 echo $zip->file();
@@ -212,7 +210,7 @@ class N2SmartSliderExport {
 
     public function createHTML($isZIP = true) {
         $this->files = array();
-        ob_end_clean();
+        n2_ob_end_clean_all();
         N2AssetsManager::createStack();
 
         N2AssetsPredefined::frontend(true);
@@ -322,7 +320,7 @@ class N2SmartSliderExport {
         foreach ($this->files AS $path => $content) {
             $zip->addFile($content, $path);
         }
-        if (ob_get_length()) ob_end_clean();
+        n2_ob_end_clean_all();
         header('Content-disposition: attachment; filename*=UTF-8\'\'' . rawurlencode($slider['title'] . '.zip'));
         header('Content-type: application/zip');
         echo $zip->file();

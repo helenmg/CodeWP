@@ -2,9 +2,9 @@
 Contributors: nextendweb
 Tags: slider, gallery slider, image slider, layer slider, responsive slider, slideshow, fullwidth slider, post slider, horizontal slider, vertical slider, photo slider, video slider
 Donate link: https://sites.fastspring.com/nextend/product/smartslider3donate
-Requires at least: 4.0
+Requires at least: 4.6
 Tested up to: 4.8.2
-Stable tag: 3.2.8
+Stable tag: 3.2.9
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -204,6 +204,37 @@ Of course! Smart Slider use protocol relative urls which works fine on http:// a
 9. Layer slider with layers styles. Made with FREE version.
 
 == Changelog ==
+
+= 3.2.9 - 12. October 2017. =
+* Feature: Drag and drop upload removes the image extension
+* Feature: Play when visible is available in the free version
+* Feature: Server side mobile detection
+* Feature: Single bullet will be hidden
+* Feature: Thumbnail updates on background change if the background image and thumbnail are the same
+* Feature: Fallback for image handling if the mime_content_type function isn't enabled on the server
+* Feature: Force full width overflow hidden element setting
+* Feature: Control normal flow (below and above slider positions) improvements
+* Feature: Affiliate hoplink improvements
+* Feature: Updated Google Font family list
+* Feature: Frontend accessibility parameter. Accessibility: :HOVER styles applies to :FOCUS. Not: :FOCUS state looks like the normal state
+* Feature: WordPress Unyson framework improved implementation
+* Fix: Hoplink fix
+* Fix: Base64_decode fallback when it's disabled on the server
+* Fix: Fallback when mime_content_type is disabled on the server
+* Fix: Click on one slide where touch is enabled
+* Fix: Font and style hover/normal improvements while blank links are used
+* Fix: Layer item scroll fix for IOS
+* Fix: Image URL on new layer & slide when the Protocol Relative URL is used.
+* Fix: Preserve 3D in Firefox
+* Fix: RTL behavior improvements
+* Fix: Send as file on Safari
+* Fix: Slider importing on certain servers
+* Fix: Thumbnail control arrows in Firefox
+* Fix: Links not working in certain cases
+* Fix: Down/right gradient orientation
+* Fix: Hidden col allowed to drop layers when drag on canvas
+* Fix: Layer window auto positioning removed
+* Fix: Hidden slider control was clickable
 
 = 3.2.8 - 20. September 2017. =
 * Fix: Possible cache related PHP error

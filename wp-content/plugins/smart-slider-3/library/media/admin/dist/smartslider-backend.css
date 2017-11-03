@@ -1184,6 +1184,16 @@ body[data-editormode="content"] #n2-admin .n2-ss-responsive-helper {
 .n2-ss-section-main-content {
     min-height: 20px;
 }
+
+/*for carousel and showcase slide editing*/
+
+#n2-ss-0 .n2-ss-slide{
+opacity:0.3;
+}
+
+#n2-ss-0 .n2-ss-slide.n2-ss-currently-edited-slide{
+opacity:1;
+}
 /*
 MARKINGS
 
@@ -2980,7 +2990,9 @@ div#n2-ss-0 .n2-ss-layer[data-type="col"] .n2-ss-layer.ui-draggable-dragging {
 
 .n2-ss-layer-edit-visible #n2-ss-slide-canvas-container .n2-ss-layer.n2-active:HOVER > .ui-spacing-handle,
 .n2-ss-layer-edit-visible #n2-ss-slide-canvas-container .n2-ss-layer.n2-active:HOVER > .n2-ss-layer-row > .ui-spacing-handle,
-.n2-ss-layer-edit-visible #n2-ss-slide-canvas-container .n2-ss-layer.n2-active:HOVER > .n2-ss-layer-content > .ui-spacing-handle {
+.n2-ss-layer-edit-visible #n2-ss-slide-canvas-container .n2-ss-layer.n2-active:HOVER > .n2-ss-layer-mask > .n2-ss-layer-row > .ui-spacing-handle,
+.n2-ss-layer-edit-visible #n2-ss-slide-canvas-container .n2-ss-layer.n2-active:HOVER > .n2-ss-layer-content > .ui-spacing-handle,
+.n2-ss-layer-edit-visible #n2-ss-slide-canvas-container .n2-ss-layer.n2-active:HOVER > .n2-ss-layer-mask > .n2-ss-layer-content > .ui-spacing-handle {
     display: block !important;
 }
 

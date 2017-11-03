@@ -3072,14 +3072,16 @@ a#variations_clear:before {
   .site-header-cart .cart-contents:after {
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;
-    font-size: inherit;
+    font-size: medium;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     height: 1em;
     float: right;
     content: "\f291";
-    line-height: 1.618; }
+    line-height: 1.618; 
+    margin-right: 1.327em;
+  }
   .addresses header.title a {
     display: block;
     width: 1em;

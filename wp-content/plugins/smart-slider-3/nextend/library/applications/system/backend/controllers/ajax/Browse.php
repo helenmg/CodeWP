@@ -22,7 +22,8 @@ class N2SystemBackendBrowseControllerAjax extends N2BackendControllerAjax {
             'png',
             'gif',
             'mp4',
-            'mp3'
+            'mp3',
+            'svg'
         );
         $_files     = scandir($path);
         $files      = array();
@@ -274,7 +275,8 @@ class N2BulletProof {
             "iff",
             "wbmp",
             "xmb",
-            "ico"
+            "ico",
+            "svg"
         );
 
         $imageType = N2Image::exif_imagetype($imageName);
@@ -390,11 +392,20 @@ class N2BulletProof {
             throw new N2ImageUploaderException($this->commonUploadErrors($fileToUpload["error"]));
         }
 
-        if(!function_exists("mime_content_type")){
-            throw new N2ImageUploaderException("The mime_content_type() function is not found on the server. It is required to upload images. Contact your host and ask them to enable this function!");            
+        if (function_exists("mime_content_type")) {
+            $rawMime = mime_content_type($fileToUpload["tmp_name"]);
+        } else {
+            $path_parts = pathinfo($_FILES["tmp_name"]["name"]);
+            switch ($path_parts['extension']) {
+                case 'mp4':
+                    $rawMime = 'video/mp4';
+                    break;
+                case 'mp3':
+                    $rawMime = 'audio/mpeg';
+                    break;
+            }
         }
 
-        $rawMime = mime_content_type($fileToUpload["tmp_name"]);
 
         switch ($rawMime) {
             case 'video/mp4':

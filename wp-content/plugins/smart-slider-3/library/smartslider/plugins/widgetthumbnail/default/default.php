@@ -170,7 +170,7 @@ class N2SSPluginWidgetThumbnailDefault extends N2SSPluginWidgetAbstract {
             'background-repeat',
             'background-position'
         );
-        $thumbnailStyle = json_decode(base64_decode($params->get('widget-thumbnail-style-slides')));
+        $thumbnailStyle = json_decode(n2_base64_decode($params->get('widget-thumbnail-style-slides')));
         if (!empty($thumbnailStyle) && !empty($thumbnailStyle->data[0]->extra)) {
             $extraCSS      = $thumbnailStyle->data[0]->extra;
             $thumbnailCode = '';
@@ -276,10 +276,10 @@ class N2SSPluginWidgetThumbnailDefault extends N2SSPluginWidgetAbstract {
         $previous  = $next = '';
         $showArrow = intval($slider->params->get(self::$key . 'arrow', 1));
         if ($showArrow) {
-            $previous = N2Html::image('data:image/svg+xml;base64,' . base64_encode(N2Filesystem::readFile(N2ImageHelper::fixed('$ss$/plugins/widgetthumbnail/default/default/thumbnail-up-arrow.svg', true))), 'Arrow', array(
+            $previous = N2Html::image('data:image/svg+xml;base64,' . n2_base64_encode(N2Filesystem::readFile(N2ImageHelper::fixed('$ss$/plugins/widgetthumbnail/default/default/thumbnail-up-arrow.svg', true))), 'Arrow', array(
                 'class' => 'nextend-thumbnail-button nextend-thumbnail-previous n2-ow'
             ));
-            $next     = N2Html::image('data:image/svg+xml;base64,' . base64_encode(N2Filesystem::readFile(N2ImageHelper::fixed('$ss$/plugins/widgetthumbnail/default/default/thumbnail-down-arrow.svg', true))), 'Arrow', array(
+            $next     = N2Html::image('data:image/svg+xml;base64,' . n2_base64_encode(N2Filesystem::readFile(N2ImageHelper::fixed('$ss$/plugins/widgetthumbnail/default/default/thumbnail-down-arrow.svg', true))), 'Arrow', array(
                 'class' => 'nextend-thumbnail-button nextend-thumbnail-next n2-ow n2-active'
             ));
         }

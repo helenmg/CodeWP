@@ -339,6 +339,10 @@ N2Require('SmartSliderApi', [], [], function ($, scope, undefined) {
         ss[action].apply(ss, Array.prototype.slice.call(arguments, 2));
     };
 
+    SmartSliderApi.prototype.applyActionWithClick = function () {
+        if (!nextend.shouldPreventClick) this.applyAction.apply(this, arguments);
+    };
+
     window.n2ss = new SmartSliderApi();
 
     return SmartSliderApi;
@@ -358,6 +362,8 @@ N2Require('SmartSliderAbstract', [], [], function ($, scope, undefined) {
         if (window[id] && window[id] instanceof SmartSliderAbstract) {
             return false;
         }
+
+        this.isAdmin = !!parameters.admin;
 
         this.id = parseInt(id.replace('n2-ss-', ''));
 
@@ -434,7 +440,6 @@ N2Require('SmartSliderAbstract', [], [], function ($, scope, undefined) {
 
     SmartSliderAbstract.prototype.onSliderHasDimension = function ($sliderElement, parameters) {
         this.killed = false;
-        this.isAdmin = false;
 
         this.responsive = false;
         this.mainAnimationLastChangeTime = 0;
@@ -504,6 +509,20 @@ N2Require('SmartSliderAbstract', [], [], function ($, scope, undefined) {
             particlejs: 0
         }, parameters);
 
+
+        if (!this.isAdmin) {
+            if (!parameters.responsive.desktop || !parameters.responsive.tablet || !parameters.responsive.mobile) {
+                var md = new MobileDetect(window.navigator.userAgent, 801),
+                    isTablet = !!md.tablet(),
+                    isMobile = !!md.phone();
+
+                if (!parameters.responsive.mobile && isMobile || !parameters.responsive.tablet && isTablet || !parameters.responsive.desktop && !isTablet && !isMobile) {
+                    this.kill();
+                    return;
+                }
+            }
+        }
+
         this.firstSlideReady = $.Deferred();
 
         try {
@@ -519,11 +538,11 @@ N2Require('SmartSliderAbstract', [], [], function ($, scope, undefined) {
         this.widgetDeferreds = [];
         this.sliderElement.on('addWidget', $.proxy(this.addWidget, this));
 
-        this.isAdmin = !!this.parameters.admin;
         if (this.isAdmin) {
             this.changeTo = function () {
             };
         }
+
 
         this.load = new scope.SmartSliderLoad(this, this.parameters.load);
 
@@ -649,7 +668,7 @@ N2Require('SmartSliderAbstract', [], [], function ($, scope, undefined) {
 
         if (!this.isAdmin) {
             var event = 'click';
-            if (this.parameters.controls.touch != '0' && this.parameters.controls.touch) {
+            if (this.hasTouch()) {
                 event = 'n2click';
             }
             this.sliderElement.find('[data-n2click]').each(function (i, el) {
@@ -720,7 +739,7 @@ N2Require('SmartSliderAbstract', [], [], function ($, scope, undefined) {
             this.sliderElement.find('a').on({
                 focus: $.proxy(function (e) {
                     if (n2FocusAllowed) {
-                        var slide = this.slider.findSlideByElement(e.currentTarget);
+                        var slide = this.findSlideByElement(e.currentTarget);
                         if (slide && slide != this.currentRealSlide) {
                             this.directionalChangeToReal(slide.index);
                         }
@@ -1133,10 +1152,14 @@ N2Require('SmartSliderAbstract', [], [], function ($, scope, undefined) {
         this.dimensions = this.responsive.responsiveDimensions;
     };
 
+    SmartSliderAbstract.prototype.hasTouch = function () {
+        return this.parameters.controls.touch != '0' && this.slides.length > 1;
+    };
+
     SmartSliderAbstract.prototype.initControls = function () {
 
         if (!this.parameters.admin) {
-            if (this.parameters.controls.touch != '0' && this.slides.length > 1) {
+            if (this.hasTouch()) {
                 new scope.SmartSliderControlTouch(this, this.parameters.controls.touch, {
                     fallbackToMouseEvents: this.parameters.controls.drag
                 });
@@ -4947,7 +4970,7 @@ N2Require('FrontendComponentRow', ['FrontendComponent'], [], function ($, scope,
         if (this.children.length > 0) {
             for (var i = this.children.length - 1; i >= 0; i--) {
                 this.children[i].$layer
-                    .css('marginRight', gutterValue)
+                    .css(nextend.rtl.marginRight, gutterValue)
                     .css('marginTop', gutterValue);
             }
         }
@@ -5059,6 +5082,7 @@ N2Require('SmartSliderResponsive', [], [], function ($, scope, undefined) {
             maximumSlideWidthMobileLandscape: 0,
             maximumSlideWidthConstrainHeight: 0,
             forceFull: 0,
+            forceFullOverflowX: 'body',
             forceFullHorizontalSelector: '',
             verticalOffsetSelectors: '',
 
@@ -5164,7 +5188,6 @@ N2Require('SmartSliderResponsive', [], [], function ($, scope, undefined) {
     };
 
     SmartSliderResponsive.prototype.start = function () {
-
         if (nextend.fontsDeferred == undefined) {
             nextend.loadDeferred.always($.proxy(function () {
                 this.loadDeferred.resolve();
@@ -5240,19 +5263,6 @@ N2Require('SmartSliderResponsive', [], [], function ($, scope, undefined) {
                 }
         }
 
-        if (!this.slider.isAdmin) {
-            if (!this.parameters.desktop || !this.parameters.tablet || !this.parameters.mobile) {
-                if (isTablet == null) {
-                    var md = new MobileDetect(window.navigator.userAgent, 801);
-                    isTablet = !!md.tablet();
-                    isMobile = !!md.phone();
-                }
-                if (!this.parameters.mobile && isMobile || !this.parameters.tablet && isTablet || !this.parameters.desktop && !isTablet && !isMobile) {
-                    this.slider.kill();
-                    return;
-                }
-            }
-        }
         this.verticalOffsetSelectors = $(this.parameters.verticalOffsetSelectors);
 
         n2c.log('Responsive: Store defaults');
@@ -5562,7 +5572,9 @@ N2Require('SmartSliderResponsive', [], [], function ($, scope, undefined) {
 
         if (!this.slider.isAdmin) {
             if (this.parameters.forceFull) {
-                $('body').css('overflow-x', 'hidden');
+                if (this.parameters.forceFullOverflowX != 'none') {
+                    $(this.parameters.forceFullOverflowX).css('overflow-x', 'hidden');
+                }
                 var customWidth = 0,
                     adjustLeftOffset = 0;
 

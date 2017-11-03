@@ -300,6 +300,7 @@
   .n2-ss-layer[data-type="col"] > .n2-ss-layer-mask > .n2-ss-layer-rotation,
   .n2-ss-layer[data-type="content"] > .n2-ss-layer-mask > .n2-ss-layer-rotation {
     display: flex;
+    flex-direction: column;
   }
 
   .n2-ss-layer-group {
@@ -329,6 +330,7 @@
   }
 
   .n2-ss-widget {
+    position: relative;
     display: none;
     -webkit-backface-visibility: hidden;
     -webkit-perspective: 1;
@@ -343,6 +345,8 @@
 
   .n2-ss-widget.n2-ss-widget-hidden {
     opacity: 0 !important;
+    z-index: -1;
+    pointer-events: none;
   }
 
   &.n2-ss-tablet .n2-ss-widget {
@@ -485,6 +489,7 @@
 
   iframe.n2-ow {
     max-width: none;
+    display: block;
   }
 
   .n2-ss-item-iframe {
@@ -550,13 +555,15 @@
     overflow: hidden;
     text-overflow: clip;
   }
-  ::-moz-placeholder {
+
+  input.n2-ow::-moz-placeholder,
+  input.n2-ow:-moz-placeholder {
     text-overflow: clip;
     color: inherit;
   }
-  /* firefox 19+ */
-  input.n2-ow:-moz-placeholder {
-    text-overflow: clip;
+
+  input.n2-ow::-webkit-input-placeholder,
+  input.n2-ow::placeholder {
     color: inherit;
   }
 
@@ -565,7 +572,7 @@
     margin: 0;
   }
 
-  .n2-ss-thumbnail-type {
+  .n2-ow .n2-ss-thumbnail-type {
     width: 48px;
     height: 48px;
     margin-left: -24px;
@@ -609,6 +616,10 @@
     flex: 1 1 auto;
   }
 
+  .n2-ss-layer[data-type="row"].n2-ss-stretch-layer > .n2-ss-layer-mask {
+    display: flex;
+  }
+
   .n2-ss-layer-row {
     box-sizing: border-box;
     display: flex;
@@ -644,12 +655,28 @@
     display: block;
   }
 
-  .n2-ss-layer-row > .n2-ss-layer.n2-ss-last-in-row {
+  [dir="ltr"] & .n2-ss-layer-row > .n2-ss-layer{
+    margin-left: 0 !important;
+  }
+
+  [dir="ltr"] & .n2-ss-layer-row > .n2-ss-layer.n2-ss-last-in-row {
     margin-right: 0 !important;
   }
 
-  .n2-ss-layer-row > .n2-ss-layer:last-child {
+  [dir="ltr"] & .n2-ss-layer-row > .n2-ss-layer:last-child {
     margin-right: 0;
+  }
+
+  [dir="rtl"] & .n2-ss-layer-row > .n2-ss-layer{
+    margin-right: 0 !important;
+  }
+
+  [dir="rtl"] & .n2-ss-layer-row > .n2-ss-layer.n2-ss-last-in-row {
+    margin-left: 0 !important;
+  }
+
+  [dir="rtl"] & .n2-ss-layer-row > .n2-ss-layer:last-child {
+    margin-left: 0;
   }
 
   .n2-ss-layer-row .n2-ss-item {
@@ -832,6 +859,16 @@
   .n2-ss-img-wrapper,
   .n2-ss-img-wrapper img {
     line-height: 0;
+  }
+
+  .n2-ss-item-iframe-wrapper {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+    height: 100%;
+  }
+
+  .n2i {
+    vertical-align: top;
   }
 }
 

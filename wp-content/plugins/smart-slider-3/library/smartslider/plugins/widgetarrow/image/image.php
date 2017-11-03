@@ -60,6 +60,7 @@ class N2SSPluginWidgetArrowImage extends N2SSPluginWidgetAbstract {
                 'next'
             );
         }
+
         return $positions;
     }
 
@@ -71,11 +72,12 @@ class N2SSPluginWidgetArrowImage extends N2SSPluginWidgetAbstract {
                 $arrow = null;
             }
         }
+
         return !!$arrow;
     }
 
     static function render($slider, $id, $params) {
-        $html = '';
+        $return = array();
 
         $previous           = $params->get(self::$key . 'previous-image');
         $previousColor      = $params->get(self::$key . 'previous-color');
@@ -129,21 +131,22 @@ class N2SSPluginWidgetArrowImage extends N2SSPluginWidgetAbstract {
             }
 
             if ($previous) {
-                $html .= self::getHTML($id, $params, $animation, 'previous', $previous, $displayClass, $displayAttributes, $styleClass, $previousColor, $previousHover, $previousHoverColor);
+                $return['previous'] = self::getHTML($id, $params, $animation, 'previous', $previous, $displayClass, $displayAttributes, $styleClass, $previousColor, $previousHover, $previousHoverColor);
             }
 
             if ($next) {
-                $html .= self::getHTML($id, $params, $animation, 'next', $next, $displayClass, $displayAttributes, $styleClass, $nextColor, $nextHover, $nextHoverColor);
+                $return['next'] = self::getHTML($id, $params, $animation, 'next', $next, $displayClass, $displayAttributes, $styleClass, $nextColor, $nextHover, $nextHoverColor);
             }
 
             N2JS::addInline('new N2Classes.SmartSliderWidgetArrowImage("' . $id . '", ' . n2_floatval($params->get(self::$key . 'responsive-desktop')) . ', ' . n2_floatval($params->get(self::$key . 'responsive-tablet')) . ', ' . n2_floatval($params->get(self::$key . 'responsive-mobile')) . ');');
         }
 
-        return $html;
+        return $return;
     }
 
     private static function getHTML($id, &$params, $animation, $side, $image, $displayClass, $displayAttributes, $styleClass, $color = 'ffffffcc', $hover = 0, $hoverColor = 'ffffffcc') {
 
+        $isNormalFlow = self::isNormalFlow($params, self::$key . $side . '-');
         list($style, $attributes) = self::getPosition($params, self::$key . $side . '-');
 
         $imageHover = null;
@@ -152,7 +155,7 @@ class N2SSPluginWidgetArrowImage extends N2SSPluginWidgetAbstract {
         if (substr($image, 0, 1) == '$' && $ext == 'svg') {
             list($color, $opacity) = N2Color::colorToSVG($color);
             $content = N2Filesystem::readFile(N2ImageHelper::fixed($image, true));
-            $image   = 'data:image/svg+xml;base64,' . base64_encode(str_replace(array(
+            $image   = 'data:image/svg+xml;base64,' . n2_base64_encode(str_replace(array(
                     'fill="#FFF"',
                     'opacity="1"'
                 ), array(
@@ -162,7 +165,7 @@ class N2SSPluginWidgetArrowImage extends N2SSPluginWidgetAbstract {
 
             if ($hover) {
                 list($color, $opacity) = N2Color::colorToSVG($hoverColor);
-                $imageHover = 'data:image/svg+xml;base64,' . base64_encode(str_replace(array(
+                $imageHover = 'data:image/svg+xml;base64,' . n2_base64_encode(str_replace(array(
                         'fill="#FFF"',
                         'opacity="1"'
                     ), array(
@@ -178,17 +181,17 @@ class N2SSPluginWidgetArrowImage extends N2SSPluginWidgetAbstract {
             $image = N2Html::image($image, 'Arrow', array(
                 'class'        => 'n2-ow',
                 'data-no-lazy' => '1',
-                'data-hack' => 'data-lazy-src'
+                'data-hack'    => 'data-lazy-src'
             ));
         } else {
             $image = N2Html::image($image, 'Arrow', array(
                     'class'        => 'n2-arrow-normal-img n2-ow',
                     'data-no-lazy' => '1',
-                    'data-hack' => 'data-lazy-src'
+                    'data-hack'    => 'data-lazy-src'
                 )) . N2Html::image($imageHover, 'Arrow', array(
                     'class'        => 'n2-arrow-hover-img n2-ow',
                     'data-no-lazy' => '1',
-                    'data-hack' => 'data-lazy-src'
+                    'data-hack'    => 'data-lazy-src'
                 ));
         }
 
@@ -204,23 +207,23 @@ class N2SSPluginWidgetArrowImage extends N2SSPluginWidgetAbstract {
 
         if ($animation == 'none' || $animation == 'fade') {
             return N2Html::tag('div', $displayAttributes + $attributes + array(
-                    'id'    => $id . '-arrow-' . $side,
-                    'class' => $displayClass . $styleClass . 'nextend-arrow n2-ib n2-ow nextend-arrow-' . $side . '  nextend-arrow-animated-' . $animation,
-                    'style' => $style,
-                    'role' => 'button',
+                    'id'         => $id . '-arrow-' . $side,
+                    'class'      => $displayClass . $styleClass . 'nextend-arrow n2-ow nextend-arrow-' . $side . '  nextend-arrow-animated-' . $animation . ' ' . ($isNormalFlow ? '' : 'n2-ib'),
+                    'style'      => $style . ($isNormalFlow ? 'margin-left:auto;margin-right:auto;' : ''),
+                    'role'       => 'button',
                     'aria-label' => $label,
-                    'tabindex' => '0'
+                    'tabindex'   => '0'
                 ), $image);
         }
 
 
         return N2Html::tag('div', $displayAttributes + $attributes + array(
-                'id'    => $id . '-arrow-' . $side,
-                'class' => $displayClass . 'nextend-arrow n2-ib nextend-arrow-animated n2-ow nextend-arrow-animated-' . $animation . ' nextend-arrow-' . $side,
-                'style' => $style,
-                'role' => 'button',
+                'id'         => $id . '-arrow-' . $side,
+                'class'      => $displayClass . 'nextend-arrow nextend-arrow-animated n2-ow nextend-arrow-animated-' . $animation . ' nextend-arrow-' . $side . ' ' . ($isNormalFlow ? '' : 'n2-ib'),
+                'style'      => $style . ($isNormalFlow ? 'margin-left:auto;margin-right:auto;' : ''),
+                'role'       => 'button',
                 'aria-label' => $label,
-                'tabindex' => '0'
+                'tabindex'   => '0'
             ), N2Html::tag('div', array(
                 'class' => $styleClass . ' n2-resize'
             ), $image) . N2Html::tag('div', array(

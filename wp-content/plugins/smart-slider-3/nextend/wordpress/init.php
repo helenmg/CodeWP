@@ -1,4 +1,5 @@
 <?php
+
 define('N2WORDPRESS', 1);
 define('N2JOOMLA', 0);
 define('N2MAGENTO', 0);
@@ -134,10 +135,6 @@ class N2Wordpress {
         return $buffer;
     }
 }
-
-N2Wordpress::init();
-
-do_action('nextend_loaded');
 
 function nextend_comment_for_css() {
     static $once;

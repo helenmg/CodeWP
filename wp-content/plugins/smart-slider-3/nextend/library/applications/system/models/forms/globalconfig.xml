@@ -2,7 +2,7 @@
   <params name="options" label="Options">
     <param type="onoff" name="protocol-relative" label="Use protocol-relative URL" default="1"/>
     <param type="onoff" name="force-english-backend" label="Force english backend" default="0"/>
-    <param type="onoff" name="show-joomla-admin-footer" label="Show Joomla admin footer" default="0"/>
+    <param type="onoff" name="frontend-accessibility" label="Improved frontend accessibility" default="1"/>
   </params>
   <params name="javascript" label="JavaScript">
     <param type="token"/>

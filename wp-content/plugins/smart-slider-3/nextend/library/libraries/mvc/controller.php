@@ -151,11 +151,7 @@ class N2ControllerAjax extends N2Controller {
     protected $response;
 
     public function __construct($appType, $defaultParams) {
-        $handlers = ob_list_handlers();
-        while (count($handlers) > 0 && $handlers[0] != 'ob_gzhandler') {
-            ob_end_clean();
-            $handlers = ob_list_handlers();
-        }
+        n2_ob_end_clean_all();
 
         $this->response = new N2AjaxResponse($appType);
         parent::__construct($appType, $defaultParams);

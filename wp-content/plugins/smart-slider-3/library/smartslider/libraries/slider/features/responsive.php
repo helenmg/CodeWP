@@ -23,6 +23,8 @@ class N2SmartSliderFeatureResponsive {
 
     public $forceFull = 0;
 
+    public $forceFullOverflowX = 'body';
+
     public $forceFullHorizontalSelector = '';
 
     public $constrainRatio = 1;
@@ -411,6 +413,7 @@ class N2SmartSliderFeatureResponsive {
             'maximumSlideWidthMobileLandscape' => $this->maximumSlideWidthMobileLandscape,
             'maximumSlideWidthConstrainHeight' => intval($this->maximumSlideWidthConstrainHeight),
             'forceFull'                        => $this->forceFull,
+            'forceFullOverflowX'               => $this->forceFullOverflowX,
             'forceFullHorizontalSelector'      => $this->forceFullHorizontalSelector,
             'constrainRatio'                   => $this->constrainRatio,
             'verticalOffsetSelectors'          => $this->verticalOffsetSelectors,

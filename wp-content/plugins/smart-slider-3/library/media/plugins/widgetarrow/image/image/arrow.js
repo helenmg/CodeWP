@@ -47,14 +47,18 @@ N2Require('SmartSliderWidgetArrowImage', [], [], function ($, scope, undefined) 
     };
 
     SmartSliderWidgetArrowImage.prototype.loaded = function () {
+        this.previousResize.css('display', 'inline-block');
         this.previousWidth = this.previousResize.width();
         this.previousHeight = this.previousResize.height();
+        this.previousResize.css('display', '');
 
+        this.nextResize.css('display', 'inline-block');
         this.nextWidth = this.nextResize.width();
         this.nextHeight = this.nextResize.height();
+        this.nextResize.css('display', '');
 
-        this.previousResize.find('img').css('width', '100%')
-        this.nextResize.find('img').css('width', '100%')
+        this.previousResize.find('img').css('width', '100%');
+        this.nextResize.find('img').css('width', '100%');
 
         this.onDevice(null, {device: this.slider.responsive.getDeviceMode()});
 

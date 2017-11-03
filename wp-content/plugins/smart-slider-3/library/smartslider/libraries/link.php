@@ -5,8 +5,9 @@ class N2LinkNextSlide {
 
     public static function parse($argument, &$attributes, $isEditor = false) {
         if (!$isEditor) {
-            $attributes['onclick'] = "n2ss.applyAction(this, 'next'); return false";
+            $attributes['onclick'] = "n2ss.applyActionWithClick(this, 'next'); return false";
         }
+
         return '#';
     }
 }
@@ -15,8 +16,9 @@ class N2LinkPreviousSlide {
 
     public static function parse($argument, &$attributes, $isEditor = false) {
         if (!$isEditor) {
-            $attributes['onclick'] = "n2ss.applyAction(this, 'previous'); return false";
+            $attributes['onclick'] = "n2ss.applyActionWithClick(this, 'previous'); return false";
         }
+
         return '#';
     }
 }
@@ -25,8 +27,9 @@ class N2LinkGoToSlide {
 
     public static function parse($argument, &$attributes, $isEditor = false) {
         if (!$isEditor) {
-            $attributes['onclick'] = "n2ss.applyAction(this, 'slide', " . intval($argument) . "); return false";
+            $attributes['onclick'] = "n2ss.applyActionWithClick(this, 'slide', " . intval($argument) . "); return false";
         }
+
         return '#';
     }
 }
@@ -39,11 +42,12 @@ class N2LinkToSlide {
         if (!$isEditor) {
             preg_match('/([0-9]+)(,([0-1]))?/', $argument, $matches);
             if (!isset($matches[3])) {
-                $attributes['onclick'] = "n2ss.applyAction(this, 'slide', " . (intval($matches[1]) - 1) . "); return false";
+                $attributes['onclick'] = "n2ss.applyActionWithClick(this, 'slide', " . (intval($matches[1]) - 1) . "); return false";
             } else {
-                $attributes['onclick'] = "n2ss.applyAction(this, 'slide', " . (intval($matches[1]) - 1) . ", " . intval($matches[3]) . "); return false";
+                $attributes['onclick'] = "n2ss.applyActionWithClick(this, 'slide', " . (intval($matches[1]) - 1) . ", " . intval($matches[3]) . "); return false";
             }
         }
+
         return '#';
     }
 }
@@ -54,11 +58,12 @@ class N2LinkToSlideID {
         if (!$isEditor) {
             preg_match('/([0-9]+)(,([0-1]))?/', $argument, $matches);
             if (!isset($matches[3])) {
-                $attributes['onclick'] = "n2ss.applyAction(this, 'slideToID', " . intval($matches[1]) . "); return false";
+                $attributes['onclick'] = "n2ss.applyActionWithClick(this, 'slideToID', " . intval($matches[1]) . "); return false";
             } else {
-                $attributes['onclick'] = "n2ss.applyAction(this, 'slideToID', " . intval($matches[1]) . ", " . intval($matches[3]) . "); return false";
+                $attributes['onclick'] = "n2ss.applyActionWithClick(this, 'slideToID', " . intval($matches[1]) . ", " . intval($matches[3]) . "); return false";
             }
         }
+
         return '#';
     }
 }
@@ -69,6 +74,7 @@ class N2LinkSlideEvent {
         if (!$isEditor) {
             $attributes['onclick'] = "n2ss.trigger(this, '" . $argument . "'); return false";
         }
+
         return '#';
     }
 }

@@ -143,7 +143,7 @@ class N2AssetsManager
         $data                  = N2Post::getVar('loadedCSS');
         $alreadyLoadedCSSFiles = array();
         if ($data) {
-            $alreadyLoadedCSSFiles = (array)json_decode(base64_decode($data));
+            $alreadyLoadedCSSFiles = (array)json_decode(n2_base64_decode($data));
         }
         self::$css->removeFiles($alreadyLoadedCSSFiles);
         */
@@ -157,7 +157,7 @@ class N2AssetsManager
         $data                 = N2Post::getVar('loadedJSS');
         $alreadyLoadedJSFiles = array();
         if (!empty($data)) {
-            $alreadyLoadedJSFiles = (array)json_decode(base64_decode($data));
+            $alreadyLoadedJSFiles = (array)json_decode(n2_base64_decode($data));
         }
 
         self::$js->removeFiles($alreadyLoadedJSFiles);

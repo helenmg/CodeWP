@@ -555,8 +555,8 @@ if ( ! function_exists( 'storefront_product_categories' ) ) {
 		if ( storefront_is_woocommerce_activated() ) {
 
 			$args = apply_filters( 'storefront_product_categories_args', array(
-				'limit' 			=> 3,
-				'columns' 			=> 3,
+				'limit' 			=> 4,
+				'columns' 			=> 4,
 				'child_categories' 	=> 0,
 				'orderby' 			=> 'name',
 				'title'				=> __( 'Colecciones', 'storefront' ),

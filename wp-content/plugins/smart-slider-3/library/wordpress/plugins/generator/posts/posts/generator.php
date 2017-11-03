@@ -128,28 +128,30 @@ class N2GeneratorPostsPosts extends N2GeneratorAbstract {
             $record['id']          = $post->ID;
             $record['url']         = get_permalink();
             $record['title']       = apply_filters('the_title', get_the_title());
-            $record['description'] = $record['content'] = get_the_content();
+            $record['content']     = get_the_content();
+            $record['description'] = preg_replace('#\[[^\]]+\]#', '',$record['content']);
+
             if (class_exists('ET_Builder_Plugin')) {
-                if (strpos($record['description'], 'et_pb_slide background_image') !== false) {
-                    $et_slides = $this->get_string_between($record['description'], 'et_pb_slide background_image="', '"');
+                if (strpos($record['content'], 'et_pb_slide background_image') !== false) {
+                    $et_slides = $this->get_string_between($record['content'], 'et_pb_slide background_image="', '"');
                     for ($j = 0; $j < count($et_slides); $j++) {
                         $record['et_slide' . $j] = $et_slides[$j];
                     }
                 }
-                if (strpos($record['description'], 'background_url') !== false){
-                    $et_backgrounds = $this->get_string_between($record['description'], 'background_url="', '"');
+                if (strpos($record['content'], 'background_url') !== false){
+                    $et_backgrounds = $this->get_string_between($record['content'], 'background_url="', '"');
                     for ($j=0; $j < count($et_backgrounds); $j++){
                         $record['et_background' . $j] = $et_backgrounds[$j];
                     }
                 }
-                if (strpos($record['description'], 'logo_image_url') !== false){
-                    $et_logoImages = $this->get_string_between($record['description'], 'logo_image_url="', '"');
+                if (strpos($record['content'], 'logo_image_url') !== false){
+                    $et_logoImages = $this->get_string_between($record['content'], 'logo_image_url="', '"');
                     for($j=0; $j < count($et_logoImages); $j++){
                         $record['et_logoImage' . $j] = $et_logoImages[$j];
                     }
                 }
-                if (strpos($record['description'], 'slider-content') !== false){
-                    $et_contents = $this->get_string_between($record['description'], 'slider-content">', '</p>');
+                if (strpos($record['content'], 'slider-content') !== false){
+                    $et_contents = $this->get_string_between($record['content'], 'slider-content">', '</p>');
                     for($j=0; $j < count($et_contents); $j++){
                         $record['et_content' . $j] = $et_contents[$j];
                     }

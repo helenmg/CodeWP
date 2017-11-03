@@ -108,4 +108,11 @@ class N2SSPluginWidgetAbstract extends N2PluginBase {
 
     }
 
+    protected static function isNormalFlow(&$params, $key) {
+
+        $mode = $params->get($key . 'position-mode', 'simple');
+
+        return ($mode == 'above' || $mode == 'below');
+    }
+
 }

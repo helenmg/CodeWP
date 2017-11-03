@@ -9,7 +9,7 @@ class N2ParseStyle {
     public function __construct($style) {
         $decoded = $style;
         if ($decoded[0] != '{') {
-            $decoded = base64_decode($decoded);
+            $decoded = n2_base64_decode($decoded);
         }
 
         $this->_style = json_decode($decoded, true);

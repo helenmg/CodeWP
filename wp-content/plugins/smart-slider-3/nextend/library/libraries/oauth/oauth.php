@@ -1350,7 +1350,7 @@ class N2OAuth {
                     $sign .= $this->Encode(($first ? '' : '&') . $parameter . '=' . $this->Encode($value));
                     $first = false;
                 }
-                $header_values['oauth_signature'] = $values['oauth_signature'] = base64_encode($this->HMAC('sha1', $sign, $key));
+                $header_values['oauth_signature'] = $values['oauth_signature'] = n2_base64_encode($this->HMAC('sha1', $sign, $key));
                 break;
             default:
                 return $this->SetError($this->signature_method . ' signature method is not yet supported');
@@ -1479,7 +1479,7 @@ class N2OAuth {
         $arguments['Headers']['Accept'] = (IsSet($options['Accept']) ? $options['Accept'] : '*/*');
         switch ($authentication = (IsSet($options['AccessTokenAuthentication']) ? strtolower($options['AccessTokenAuthentication']) : '')) {
             case 'basic':
-                $arguments['Headers']['Authorization'] = 'Basic ' . base64_encode($this->client_id . ':' . ($this->get_token_with_api_key ? $this->api_key : $this->client_secret));
+                $arguments['Headers']['Authorization'] = 'Basic ' . n2_base64_encode($this->client_id . ':' . ($this->get_token_with_api_key ? $this->api_key : $this->client_secret));
                 break;
             case '':
                 if (strlen($authorization)) $arguments['Headers']['Authorization'] = $authorization;

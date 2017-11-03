@@ -268,7 +268,7 @@ class N2SmartsliderBackendSlidesControllerAjax extends N2SmartSliderControllerAj
         $sliderId = N2Request::getInt('sliderid');
         $this->validateVariable($sliderId > 0, 'Slider');
 
-        $images = json_decode(base64_decode(N2Request::getVar('images')), true);
+        $images = json_decode(n2_base64_decode(N2Request::getVar('images')), true);
         $this->validateVariable(count($images), 'Images');
 
         $sliderObj = new N2SmartSlider($sliderId, array());
@@ -308,7 +308,7 @@ class N2SmartsliderBackendSlidesControllerAjax extends N2SmartSliderControllerAj
 
         $slidesModel = new N2SmartsliderSlidesModel();
 
-        $s     = urldecode(base64_decode(N2Request::getVar('video')));
+        $s     = urldecode(n2_base64_decode(N2Request::getVar('video')));
         $video = json_decode($s, true);
         $this->validateVariable($video, 'Video');
 
@@ -385,7 +385,7 @@ class N2SmartsliderBackendSlidesControllerAjax extends N2SmartSliderControllerAj
         $slidesModel = new N2SmartsliderSlidesModel();
         $slides      = $slidesModel->getAll($sliderId);
 
-        $changed = json_decode(base64_decode(N2Request::getVar('changed')), true);
+        $changed = json_decode(n2_base64_decode(N2Request::getVar('changed')), true);
 
         if (!$changed || !is_array($changed)) {
             $changed = array();

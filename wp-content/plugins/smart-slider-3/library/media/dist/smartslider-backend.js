@@ -3532,10 +3532,19 @@ N2Require('SlideEditManager', ['SlideAdmin'], ['smartSlider'], function ($, scop
                 var data = $('#smartslider-form').serializeArray();
                 $.each(data, function (key, input) {
                     if (input.name == 'slide[slide]') {
+
                         try {
-                            fd.append('slide', new File([input.value], "slide.txt"));
+                            fd.append('slide', new Blob([input.value]), "slide.txt");
                         } catch (e) {
-                            fd.append('slide', new Blob([input.value]));
+                            try {
+                                fd.append('slide', new Blob([input.value]));
+                            } catch (e) {
+                                try {
+                                    fd.append('slide', new File([input.value], "slide.txt"));
+                                } catch (e) {
+                                    nextend.notificationCenter.notice('Your browser does not support File api, please disable "Send slide as file" option in the global settings.');
+                                }
+                            }
                         }
                     } else {
                         fd.append(input.name, input.value);
@@ -4733,6 +4742,7 @@ N2Require('SlideSettings', ['SlideEditManager'], ['smartSlider'], function ($, s
                     .css('background', N2Color.hex2rgbaCSS(backgroundColor));
             }
         }
+        this.slideBackground.element.find('.n2-ss-slide-bg-video-color-overlay').css('background', this.$slideMask.css('background'));
     };
 
     SlideSettings.prototype.sync_backgroundImage = function () {
@@ -5089,10 +5099,10 @@ N2Require('LayerContainer', [], ['smartSlider'], function ($, scope, smartSlider
         for (var i = 0; i < layers.length; i++) {
             if (layers[i] != exclude) {
                 var droppable = layers[i].getDroppable();
-                if (droppable) {
+                if (typeof droppable == 'object') {
                     droppables.push(droppable);
                 }
-                if (layers[i].container) {
+                if (droppable != 'hidden' && layers[i].container) {
                     droppables.push.apply(droppables, layers[i].container.getDroppables(exclude));
                 }
             }
@@ -6755,11 +6765,10 @@ N2Require('LayerWindow', [], ['smartSlider'], function ($, scope, smartSlider, u
 
         this.isMinimized = false;
         this.detachedPosition = {
-            left: $.jStorage.get('ssPanelLeft') || 100,
+            left: $.jStorage.get('ssPanelLeft') || 200,
             top: $.jStorage.get('ssPanelTop') || 100,
             height: $.jStorage.get('ssPanelHeight') || 400
-        }
-        this.autoPosition = $.jStorage.get('ssPanelAutoPosition', 1);
+        };
 
         this.hasBreadcrumb = false;
         this.lastHeight = this.detachedPosition.height;
@@ -6812,10 +6821,6 @@ N2Require('LayerWindow', [], ['smartSlider'], function ($, scope, smartSlider, u
 
         var right = this.sidebar.find('.n2-ss-layer-window-title-nav-right');
 
-        this.magnet = $('<a href="#"><i class="n2-i n2-i-magnet n2-i-grey-opacity" data-n2tip="Auto position layer window"></i></a>').on('click', $.proxy(function (e) {
-            e.preventDefault();
-            this.magnetize();
-        }, this)).css('display', 'none').appendTo(right);
         $('<a href="#"><i class="n2-i n2-i-closewindow n2-i-grey-opacity"></i></a>').on('click', $.proxy(function (e) {
             e.preventDefault();
             this.hide();
@@ -6919,33 +6924,10 @@ N2Require('LayerWindow', [], ['smartSlider'], function ($, scope, smartSlider, u
         }
     }
 
-    LayerWindow.prototype.magnetize = function () {
-        if (!this.autoPosition) {
-
-            this.autoPosition = 1;
-            $.jStorage.set('ssPanelAutoPosition', 1);
-
-            this.magnet.css('display', 'none');
-
-            var activeLayer = this.canvasManager.mainContainer.getSelectedLayer();
-            if (activeLayer) {
-                activeLayer.positionSidebar();
-            }
-        }
-    }
-
     LayerWindow.prototype.show = function (layer, of) {
         this.setTitle(layer);
 
         $('body').addClass('n2-ss-layer-edit-visible');
-        if (this.autoPosition) {
-            this.sidebar.position({
-                my: 'left top',
-                at: 'right+10 top',
-                collision: "flipfit",
-                of: of.is(':visible') ? of : '#n2-ss-layer-list'
-            });
-        }
     }
 
     LayerWindow.prototype._show = function () {
@@ -7046,13 +7028,8 @@ N2Require('LayerWindow', [], ['smartSlider'], function ($, scope, smartSlider, u
     }
 
     LayerWindow.prototype.detach = function () {
-        if (this.autoPosition) {
-            this.sidebar.css('height', this.detachedPosition.height);
-            this.magnet.css('display', 'none');
-        } else {
-            this.sidebar.css(this.detachedPosition);
-            this.magnet.css('display', 'inline-block');
-        }
+
+        this.sidebar.css(this.detachedPosition);
         this.sidebar.appendTo(this.admin);
 
         this.admin.addClass('n2-sidebar-hidden');
@@ -7074,9 +7051,6 @@ N2Require('LayerWindow', [], ['smartSlider'], function ($, scope, smartSlider, u
                     $.jStorage.set('ssPanelLeft', bounding.left);
                     $.jStorage.set('ssPanelTop', bounding.top);
 
-                    this.autoPosition = 0;
-                    $.jStorage.set('ssPanelAutoPosition', 0);
-                    this.magnet.css('display', 'inline-block');
                 }, this),
                 scroll: false
             })
@@ -7095,7 +7069,7 @@ N2Require('LayerWindow', [], ['smartSlider'], function ($, scope, smartSlider, u
 
         this.onResize();
         nextend.triggerResize();
-    }
+    };
 
     LayerWindow.prototype.switchTab = function (tabName) {
         this.panelHeading.filter('[data-tab="' + tabName + '"]').trigger('click');
@@ -8036,12 +8010,6 @@ N2Require('PlacementAbsolute', ['PlacementAbstract'], ['smartSlider'], function 
 
         smartSlider.history.off();
 
-        this.layer.store('left', left, true, 'layer');
-        this.layer.$.trigger('propertyChanged', ['left', left]);
-
-        this.layer.store('top', top, true, 'layer');
-        this.layer.$.trigger('propertyChanged', ['top', top]);
-
         this.layer.store('width', width, true, 'layer');
         this.layer.$.trigger('propertyChanged', ['width', width]);
 
@@ -8053,6 +8021,12 @@ N2Require('PlacementAbsolute', ['PlacementAbstract'], ['smartSlider'], function 
 
         this.layer.store('valign', valign, true, 'layer');
         this.layer.$.trigger('propertyChanged', ['valign', valign]);
+
+        this.layer.store('left', left, true, 'layer');
+        this.layer.$.trigger('propertyChanged', ['left', left]);
+
+        this.layer.store('top', top, true, 'layer');
+        this.layer.$.trigger('propertyChanged', ['top', top]);
 
         smartSlider.history.on();
 
@@ -11562,7 +11536,7 @@ N2Require('Content', ['ContentAbstract'], ['smartSlider'], function ($, scope, s
         }
         this.$outerSection.data('layerObject', this);
 
-        this.$content = this.layer.find('> .n2-ss-layer-content');
+        this.$content = this.layer.find('.n2-ss-layer-content:first');
 
         var status = $('<div class="n2-ss-layer-status"></div>'),
             remove = $('<div class="n2-button n2-button-icon n2-button-m n2-button-m-narrow" data-n2tip="' + n2_('Delete layer') + '"><i class="n2-i n2-i-delete n2-i-grey-opacity"></i></div>').on('click', $.proxy(this.delete, this));
@@ -11987,6 +11961,9 @@ N2Require('ContentAbstract', ['LayerContainer', 'ComponentAbstract'], ['smartSli
     }
 
     ContentAbstract.prototype.getDroppable = function () {
+        if (!this.layer.is(":visible") || this.status == N2Classes.ComponentAbstract.STATUS.HIDDEN || this.status == N2Classes.ComponentAbstract.STATUS.LOCKED) {
+            return 'hidden';
+        }
         return {
             $container: this.$content,
             layer: this,
@@ -12467,10 +12444,10 @@ N2Require('MainContainer', ['LayerContainer'], ['smartSlider'], function ($, sco
         for (var i = 0; i < layers.length; i++) {
             if (layers[i] == exclude) continue;
             var droppable = layers[i].getDroppable();
-            if (droppable) {
+            if (typeof droppable == 'object') {
                 droppables.push(droppable);
             }
-            if (layers[i].container) {
+            if (droppable != 'hidden' && layers[i].container) {
                 droppables.push.apply(droppables, layers[i].container.getDroppables(exclude));
             }
         }
@@ -13529,6 +13506,9 @@ N2Require('Row', ['LayerContainer', 'ComponentAbstract'], ['smartSlider'], funct
     }
 
     Row.prototype.getDroppable = function () {
+        if (!this.layer.is(":visible") || this.status == N2Classes.ComponentAbstract.STATUS.HIDDEN || this.status == N2Classes.ComponentAbstract.STATUS.LOCKED) {
+            return 'hidden';
+        }
         return {
             $container: this.$row,
             layer: this,

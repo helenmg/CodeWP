@@ -7190,134 +7190,68 @@ N2Require('FormElementUrl', ['FormElement'], [], function ($, scope, undefined) 
 
             var parameters = this.parameters;
 
-            var lightbox = {
-                    size: [
-                        500,
-                        590
-                    ],
-                    title: n2_('Lightbox'),
-                    back: 'zero',
-                    close: true,
-                    content: '<form class="n2-form"></form>',
-                    controls: ['<a href="#" class="n2-button n2-button-normal n2-button-l n2-radius-s n2-button-green n2-uc n2-h4">' + n2_('Insert') + '</a>'],
-                    fn: {
-                        show: function () {
-                            var button = this.controls.find('.n2-button'),
-                                chooseImages = $('<a href="#" class="n2-button n2-button-normal n2-button-m n2-radius-s n2-button-green n2-uc n2-h5" style="float:right; margin-right: 20px;">' + n2_('Choose images') + '</a>'),
-                                form = this.content.find('.n2-form').on('submit', function (e) {
-                                    e.preventDefault();
-                                    button.trigger('click');
-                                }).append(this.createTextarea(n2_('Content list') + " - " + n2_('One per line'), 'n2-link-resource', 'width: 446px;height: 100px;')).append(chooseImages).append(this.createInputUnit(n2_('Autoplay duration'), 'n2-link-autoplay', 'ms', 'width: 40px;')),
-                                resourceField = this.content.find('#n2-link-resource').focus(),
-                                autoplayField = this.content.find('#n2-link-autoplay').val(0);
+            var links = {
+                size: [
+                    600,
+                    500
+                ],
+                title: n2_('Link'),
+                back: 'zero',
+                close: true,
+                content: '<div class="n2-form"></div>',
+                fn: {
+                    show: function () {
 
-                            chooseImages.on('click', function (e) {
-                                e.preventDefault();
-                                nextend.imageHelper.openMultipleLightbox(function (images) {
-                                    var value = resourceField.val().replace(/\n$/, '');
+                        this.content.find('.n2-form').append(this.createInput(n2_('Keyword'), 'n2-links-keyword', 'width:546px;'));
+                        var search = $('#n2-links-keyword'),
+                            heading = this.createHeading('').appendTo(this.content),
+                            result = this.createResult().appendTo(this.content),
+                            searchString = '';
 
-                                    for (var i = 0; i < images.length; i++) {
-                                        value += "\n" + images[i].image;
+                        search.on('keyup', $.proxy(function () {
+                            searchString = search.val();
+                            getLinks(searchString).done($.proxy(function (r) {
+                                if (search.val() == searchString) {
+                                    var links = r.data;
+                                    if (searchString == '') {
+                                        heading.html(n2_('No search term specified. Showing recent items.'));
+                                    } else {
+                                        heading.html(n2_printf(n2_('Showing items match for "%s"'), searchString));
                                     }
-                                    resourceField.val(value.replace(/^\n/, ''));
-                                });
-                            });
 
-                            var matches = lastValue.match(/lightbox\[(.*?)\]/);
-                            if (matches && matches.length == 2) {
-                                var parts = matches[1].split(',');
-                                if (parseInt(parts[parts.length - 1]) > 0) {
-                                    autoplayField.val(parseInt(parts[parts.length - 1]));
-                                    parts.pop();
-                                }
-                                resourceField.val(parts.join("\n"));
-                            }
-
-                            this.content.append(this.createHeading(n2_('Examples')));
-                            this.createTable([
-                                [n2_('Image'), 'https://smartslider3.com/image.jpg'],
-                                ['YouTube', 'https://www.youtube.com/watch?v=lsq09izc1H4'],
-                                ['Vimeo', 'https://vimeo.com/144598279'],
-                                ['Iframe', 'https://smartslider3.com']
-                            ], ['', '']).appendTo(this.content);
-
-                            button.on('click', $.proxy(function (e) {
-                                e.preventDefault();
-                                var link = resourceField.val();
-                                if (link != '') {
-                                    var autoplay = '';
-                                    if (autoplayField.val() > 0) {
-                                        autoplay = ',' + autoplayField.val();
+                                    var data = [],
+                                        modal = this;
+                                    for (var i = 0; i < links.length; i++) {
+                                        data.push([links[i].title, links[i].info, $('<div class="n2-button n2-button-normal n2-button-xs n2-radius-s n2-button-green n2-uc n2-h5">' + n2_('Select') + '</div>')
+                                            .on('click', {permalink: links[i].link}, function (e) {
+                                                callback(e.data.permalink);
+                                                modal.hide();
+                                            })]);
                                     }
-                                    callback('lightbox[' + link.replace(/,/g, '&#44;').split("\n").filter(Boolean).join(',') + autoplay + ']');
+                                    result.html('');
+                                    this.createTable(data, ['width:100%;', '', '']).appendTo(this.createTableWrap().appendTo(result));
                                 }
-                                this.hide(e);
                             }, this));
-                        }
+                        }, this))
+                            .trigger('keyup').focus();
+
+                        this.content.append('<hr style="margin: 0 -20px;"/>');
+                        var external = $('<div class="n2-input-button"><input placeholder="External url" type="text" id="external-url" name="external-url" value="" /><a href="#" class="n2-button n2-button-normal n2-button-l n2-radius-s n2-button-green n2-uc n2-h4">Insert</a></div>')
+                                .css({
+                                    display: 'block',
+                                    textAlign: 'center'
+                                })
+                                .appendTo(this.content),
+                            externalInput = external.find('input').val(lastValue);
+
+                        external.find('.n2-button').on('click', function (e) {
+                            e.preventDefault();
+                            callback(externalInput.val());
+                            modal.hide();
+                        });
                     }
-                },
-                links = {
-                    size: [
-                        600,
-                        500
-                    ],
-                    title: n2_('Link'),
-                    back: 'zero',
-                    close: true,
-                    content: '<div class="n2-form"></div>',
-                    fn: {
-                        show: function () {
-
-                            this.content.find('.n2-form').append(this.createInput(n2_('Keyword'), 'n2-links-keyword', 'width:546px;'));
-                            var search = $('#n2-links-keyword'),
-                                heading = this.createHeading('').appendTo(this.content),
-                                result = this.createResult().appendTo(this.content),
-                                searchString = '';
-
-                            search.on('keyup', $.proxy(function () {
-                                searchString = search.val();
-                                getLinks(searchString).done($.proxy(function (r) {
-                                    if (search.val() == searchString) {
-                                        var links = r.data;
-                                        if (searchString == '') {
-                                            heading.html(n2_('No search term specified. Showing recent items.'));
-                                        } else {
-                                            heading.html(n2_printf(n2_('Showing items match for "%s"'), searchString));
-                                        }
-
-                                        var data = [],
-                                            modal = this;
-                                        for (var i = 0; i < links.length; i++) {
-                                            data.push([links[i].title, links[i].info, $('<div class="n2-button n2-button-normal n2-button-xs n2-radius-s n2-button-green n2-uc n2-h5">' + n2_('Select') + '</div>')
-                                                .on('click', {permalink: links[i].link}, function (e) {
-                                                    callback(e.data.permalink);
-                                                    modal.hide();
-                                                })]);
-                                        }
-                                        result.html('');
-                                        this.createTable(data, ['width:100%;', '', '']).appendTo(this.createTableWrap().appendTo(result));
-                                    }
-                                }, this));
-                            }, this))
-                                .trigger('keyup').focus();
-
-                            this.content.append('<hr style="margin: 0 -20px;"/>');
-                            var external = $('<div class="n2-input-button"><input placeholder="External url" type="text" id="external-url" name="external-url" value="" /><a href="#" class="n2-button n2-button-normal n2-button-l n2-radius-s n2-button-green n2-uc n2-h4">Insert</a></div>')
-                                    .css({
-                                        display: 'block',
-                                        textAlign: 'center'
-                                    })
-                                    .appendTo(this.content),
-                                externalInput = external.find('input').val(lastValue);
-
-                            external.find('.n2-button').on('click', function (e) {
-                                e.preventDefault();
-                                callback(externalInput.val());
-                                modal.hide();
-                            });
-                        }
-                    }
-                };
+                }
+            };
             links.back = false;
             modal = new NextendModal({
                 zero: links

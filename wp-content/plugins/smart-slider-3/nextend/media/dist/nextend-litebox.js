@@ -315,7 +315,8 @@
                         'allowfullscreen': '',
                         'class': 'litebox-content',
                         'style': 'background: #000',
-                        'seamless': 'seamless'
+                        'seamless': 'seamless',
+                        'sandbox': 'allow-forms allow-popups allow-scripts allow-same-origin'
                     });
 
                     $this.transitionContent('embed', $currentContent, $iframe);
@@ -346,7 +347,8 @@
                     'hspace': '0',
                     'scrolling': n2const.isIOS ? 'no' : 'auto',
                     'class': 'litebox-content',
-                    'allowfullscreen': ''
+                    'allowfullscreen': '',
+                    'sandbox': 'allow-forms allow-popups allow-scripts allow-same-origin'
                 });
 
                 $this.transitionContent('iframe', $currentContent, $iframe);

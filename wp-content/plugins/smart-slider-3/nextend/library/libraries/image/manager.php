@@ -1,7 +1,6 @@
 <?php
 
-class N2ImageManager
-{
+class N2ImageManager {
 
     /**
      * @var N2StorageImage
@@ -31,6 +30,14 @@ class N2ImageManager
               ));
     }
 
+    public static function hasImageData($image) {
+        $image = self::$model->getByImage($image);
+        if(!empty($image)){
+            return true;
+        }
+        return false;
+    }
+
     public static function getImageData($image, $read = false) {
         $visual = self::$model->getByImage($image);
         if (empty($visual)) {
@@ -42,7 +49,8 @@ class N2ImageManager
             }
         }
         self::$loaded[] = $visual;
-        return array_merge(N2StorageImage::$emptyImage, json_decode(base64_decode($visual['value']), true));
+
+        return array_merge(N2StorageImage::$emptyImage, json_decode(n2_base64_decode($visual['value']), true));
     }
 
     public static function addImageData($image, $value) {
@@ -56,8 +64,7 @@ class N2ImageManager
 
 N2ImageManager::init();
 
-class N2StorageImage
-{
+class N2StorageImage {
 
     private $model = null;
 
@@ -99,20 +106,20 @@ class N2StorageImage
 
     public function getByImage($image) {
         static $cache = array();
-        
-        if(!isset($cache[$image])){
+
+        if (!isset($cache[$image])) {
             $cache[$image] = $this->model->db->findByAttributes(array(
                 "hash" => md5($image)
             ));
         }
-        
+
         return $cache[$image];
     }
 
     public function setById($id, $value) {
 
         if (is_array($value)) {
-            $value = base64_encode(json_encode($value));
+            $value = n2_base64_encode(json_encode($value));
         }
 
         $result = $this->getById($id);
@@ -121,15 +128,17 @@ class N2StorageImage
             $this->model->db->update(array('value' => $value), array(
                 "id" => $id
             ));
+
             return true;
         }
+
         return false;
     }
 
     public function setByImage($image, $value) {
 
         if (is_array($value)) {
-            $value = base64_encode(json_encode($value));
+            $value = n2_base64_encode(json_encode($value));
         }
 
         $result = $this->getByImage($image);
@@ -138,8 +147,10 @@ class N2StorageImage
             $this->model->db->update(array('value' => $value), array(
                 "id" => $result['id']
             ));
+
             return true;
         }
+
         return false;
     }
 
@@ -155,7 +166,7 @@ class N2StorageImage
     public function set($image, $value) {
 
         if (is_array($value)) {
-            $value = base64_encode(json_encode($value));
+            $value = n2_base64_encode(json_encode($value));
         }
 
         $result = $this->getByImage($image);
@@ -167,6 +178,7 @@ class N2StorageImage
                 "id" => $result['id']
             );
             $this->model->db->update(array('value' => $value), $attributes);
+
             return true;
         }
     }
@@ -174,7 +186,7 @@ class N2StorageImage
     public function add($image, $value) {
 
         if (is_array($value)) {
-            $value = base64_encode(json_encode($value));
+            $value = n2_base64_encode(json_encode($value));
         }
 
         $this->model->db->insert(array(
@@ -182,6 +194,7 @@ class N2StorageImage
             "image" => $image,
             "value" => $value
         ));
+
         return $this->model->db->insertId();
     }
 

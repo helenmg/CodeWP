@@ -16,6 +16,7 @@ class N2Settings {
             'protocol-relative'        => 1,
             'force-english-backend'    => 0,
             'show-joomla-admin-footer' => 0,
+            'frontend-accessibility'   => 1,
             'curl'                     => 1,
             'curl-clean-proxy'         => 0,
             'css-mode'                 => 'normal',

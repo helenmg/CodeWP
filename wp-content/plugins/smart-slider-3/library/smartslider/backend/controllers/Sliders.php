@@ -85,7 +85,7 @@ class N2SmartsliderBackendSlidersController extends N2SmartSliderController {
             $zip->addFile(file_get_contents($file), basename($file));
             unlink($file);
         }
-        ob_end_clean();
+        n2_ob_end_clean_all();
         header('Content-disposition: attachment; filename=sliders_unzip_to_import.zip');
         header('Content-type: application/zip');
         echo $zip->file();

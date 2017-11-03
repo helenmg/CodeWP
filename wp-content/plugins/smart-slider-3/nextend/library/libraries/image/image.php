@@ -383,7 +383,7 @@ class N2Image extends N2CacheImage {
         $pathInfo  = pathinfo(parse_url($imagePath, PHP_URL_PATH));
         $extension = self::validateExtension($pathInfo['extension']);
         if ($extension) {
-            return 'data:image/' . $extension . ';base64,' . base64_encode(N2Filesystem::readFile($imagePath));
+            return 'data:image/' . $extension . ';base64,' . n2_base64_encode(N2Filesystem::readFile($imagePath));
         }
 
         return N2ImageHelper::fixed($image);

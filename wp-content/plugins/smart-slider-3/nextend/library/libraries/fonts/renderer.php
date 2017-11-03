@@ -37,7 +37,7 @@ class N2FontRenderer {
                 if (is_string($font['value'])) {
                     $decoded = $font['value'];
                     if ($decoded[0] != '{') {
-                        $decoded = base64_decode($decoded);
+                        $decoded = n2_base64_decode($decoded);
                     }
                     $value = json_decode($decoded, true);
                 } else {
@@ -62,9 +62,9 @@ class N2FontRenderer {
         } else if ($font != '') {
             $decoded = $font;
             if ($decoded[0] != '{') {
-                $decoded = base64_decode($decoded);
+                $decoded = n2_base64_decode($decoded);
             } else {
-                $font = base64_encode($decoded);
+                $font = n2_base64_encode($decoded);
             }
             $value = json_decode($decoded, true);
             if ($value) {
@@ -125,6 +125,7 @@ class N2FontRenderer {
     }
 }
 
+$frontendAccessibility = intval(N2Settings::get('frontend-accessibility', 1));
 
 N2FontRenderer::$mode = array(
     '0'                   => array(
@@ -166,9 +167,12 @@ N2FontRenderer::$mode = array(
             'combined' => false
         ),
         'preview'       => '<div class="{fontClassName}">' . n2_('Button') . '</div>',
-        'selectors'     => array(
+        'selectors'     => $frontendAccessibility ? array(
             '@pre@selector'                                                  => '@tab0',
             '@pre@selector:HOVER, @pre@selector:ACTIVE, @pre@selector:FOCUS' => '@tab1'
+        ) : array(
+            '@pre@selector, @pre@selector:FOCUS'        => '@tab0',
+            '@pre@selector:HOVER, @pre@selector:ACTIVE' => '@tab1'
         )
     ),
     'link'                => array(
@@ -182,9 +186,12 @@ N2FontRenderer::$mode = array(
             'combined' => false
         ),
         'preview'       => '<div class="{fontClassName}">' . n2_('Button') . '</div>',
-        'selectors'     => array(
+        'selectors'     => $frontendAccessibility ? array(
             '@pre@selector a'                                                      => '@tab0',
             '@pre@selector a:HOVER, @pre@selector a:ACTIVE, @pre@selector a:FOCUS' => '@tab1'
+        ) : array(
+            '@pre@selector a, @pre@selector a:FOCUS'        => '@tab0',
+            '@pre@selector a:HOVER, @pre@selector a:ACTIVE' => '@tab1'
         )
     ),
     'accordionslidetitle' => array(
@@ -216,9 +223,9 @@ N2FontRenderer::$mode = array(
         ),
         'preview'       => '<div class="{fontClassName}">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do <a href="#">test link</a> incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in <a href="#">test link</a> velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat <a href="#">test link</a>, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>',
         'selectors'     => array(
-            '@pre@selector'                                                        => '@tab0',
-            '@pre@selector a'                                                      => '@tab1',
-            '@pre@selector a:HOVER, @pre@selector a:ACTIVE, @pre@selector a:FOCUS' => '@tab2'
+            '@pre@selector'                                 => '@tab0',
+            '@pre@selector a, @pre@selector a:FOCUS'        => '@tab1',
+            '@pre@selector a:HOVER, @pre@selector a:ACTIVE' => '@tab2'
         )
     ),
     'dot'                 => array(
@@ -233,8 +240,8 @@ N2FontRenderer::$mode = array(
         ),
         'preview'       => '',
         'selectors'     => array(
-            '@pre@selector'                                                                           => '@tab0',
-            '@pre@selector.n2-active, @pre@selector:HOVER, @pre@selector:ACTIVE, @pre@selector:FOCUS' => '@tab1'
+            '@pre@selector, @pre@selector:FOCUS'                                 => '@tab0',
+            '@pre@selector.n2-active, @pre@selector:HOVER, @pre@selector:ACTIVE' => '@tab1'
         )
     ),
     'list'                => array(
@@ -250,9 +257,9 @@ N2FontRenderer::$mode = array(
         ),
         'preview'       => '',
         'selectors'     => array(
-            '@pre@selector li'                                                              => '@tab0',
-            '@pre@selector li a'                                                            => '@tab1',
-            '@pre@selector li a:HOVER, @pre@selector li a:ACTIVE, @pre@selector li a:FOCUS' => '@tab2'
+            '@pre@selector li'                                    => '@tab0',
+            '@pre@selector li a, @pre@selector li a:FOCUS'        => '@tab1',
+            '@pre@selector li a:HOVER, @pre@selector li a:ACTIVE' => '@tab2'
         )
     )
 );

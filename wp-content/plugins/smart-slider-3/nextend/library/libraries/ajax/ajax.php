@@ -28,7 +28,7 @@ class N2Ajax
             //$subformValue[N2Post::getVar('name')] = N2Post::getVar('value');
             //$form->loadArray($subformValue);
             $form->loadXMLFile($configurationXmlFile);
-            ob_end_clean(); // To clear the output of the platform
+            n2_ob_end_clean_all(); // To clear the output of the platform
             ob_start();
             $subform = $form->getSubFormAjax(N2Post::getVar('tab'), $name);
             $subform->initAjax($control_name);

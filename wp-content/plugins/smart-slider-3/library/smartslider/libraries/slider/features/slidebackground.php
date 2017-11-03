@@ -72,9 +72,9 @@ class N2SmartSliderFeatureSlideBackground {
                     break;
                 case 'diagonal2':
                     $style .= 'background:#' . substr($color, 0, 6) . ';';
-                    $style .= 'background:-moz-linear-gradient(-45deg, ' . N2Color::colorToRGBA($color) . ' 0%,' . N2Color::colorToRGBA($colorEnd) . ' 100%);';
-                    $style .= 'background:-webkit-linear-gradient(-45deg, ' . N2Color::colorToRGBA($color) . ' 0%,' . N2Color::colorToRGBA($colorEnd) . ' 100%);';
-                    $style .= 'background:linear-gradient(-45deg, ' . N2Color::colorToRGBA($color) . ' 0%,' . N2Color::colorToRGBA($colorEnd) . ' 100%);';
+                    $style .= 'background:-moz-linear-gradient(-45deg, ' . N2Color::colorToRGBA($colorEnd) . ' 0%,' . N2Color::colorToRGBA($color) . ' 100%);';
+                    $style .= 'background:-webkit-linear-gradient(-45deg, ' . N2Color::colorToRGBA($colorEnd) . ' 0%,' . N2Color::colorToRGBA($color) . ' 100%);';
+                    $style .= 'background:linear-gradient(-45deg, ' . N2Color::colorToRGBA($colorEnd) . ' 0%,' . N2Color::colorToRGBA($color) . ' 100%);';
                     $style .= 'background:filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#' . substr($color, 0, 6) . '\', endColorstr=\'#' . substr($color, 0, 6) . '\',GradientType=1);';
                     break;
             }
@@ -90,8 +90,10 @@ class N2SmartSliderFeatureSlideBackground {
 
     private function makeBackground($slide) {
 
-        $videoHTML = '';
-        if ($slide->parameters->get('background-type') == 'video') {
+        $videoHTML      = '';
+        $backgroundType = $slide->parameters->get('background-type');
+
+        if ($backgroundType == 'video') {
             $videoHTML .= $this->makeBackgroundVideo($slide);
         }
 
@@ -109,15 +111,23 @@ class N2SmartSliderFeatureSlideBackground {
             $fillMode = $this->slider->params->get('backgroundMode', 'fill');
         }
 
-        if ($slide->parameters->get('background-type') == 'color') {
+        if ($backgroundType == 'color') {
             return $this->colorOnly($videoHTML, $fillMode, $backgroundColorStyle, $backgroundImageOpacity, $backgroundImageBlur, $x, $y);
         }
 
+        $rawBackgroundImage = $slide->parameters->get('backgroundImage', '');
+
+        if (empty($rawBackgroundImage)) {
+            if (empty($backgroundColorStyle)) {
+                return $this->emptyBackgroundImage($videoHTML);
+            } else {
+                return $this->colorOnly($videoHTML, $fillMode, $backgroundColorStyle, $backgroundImageOpacity, $backgroundImageBlur, $x, $y);
+            }
+        }
 
         if ($slide->hasGenerator()) {
 
-            $rawBackgroundImage = $slide->parameters->get('backgroundImage', '');
-            $backgroundImage    = $slide->fill($rawBackgroundImage);
+            $backgroundImage = $slide->fill($rawBackgroundImage);
 
             $imageData = N2ImageManager::getImageData($rawBackgroundImage);
 
@@ -127,9 +137,8 @@ class N2SmartSliderFeatureSlideBackground {
             $imageData['mobile']['image']         = $slide->fill($imageData['mobile']['image']);
             $imageData['mobile-retina']['image']  = $slide->fill($imageData['mobile-retina']['image']);
         } else {
-            $backgroundImage = $slide->fill($slide->parameters->get('backgroundImage', ''));
-
-            $imageData = N2ImageManager::getImageData($backgroundImage);
+            $backgroundImage = $slide->fill($rawBackgroundImage);
+            $imageData       = N2ImageManager::getImageData($backgroundImage);
         }
 
         if (empty($backgroundImage)) {
@@ -144,6 +153,15 @@ class N2SmartSliderFeatureSlideBackground {
 
         return $this->image($videoHTML, $fillMode, $backgroundColorStyle, $backgroundImageOpacity, $backgroundImageBlur, $src, $imageData, $alt, $title, $x, $y);
 
+    }
+
+    private function emptyBackgroundImage($videoHTML) {
+
+        return N2Html::tag('div', array(
+            "class" => "n2-ss-slide-background n2-ow"
+        ), N2Html::tag('div', array(
+            'class' => 'n2-ss-slide-background-mask'
+        ), $videoHTML));
     }
 
     private function colorOnly($videoHTML, $fillMode, $backgroundColor, $backgroundImageOpacity, $backgroundImageBlur, $x, $y) {
@@ -180,6 +198,7 @@ class N2SmartSliderFeatureSlideBackground {
     }
 
     private function getDeviceAttributes($image, $imageData) {
+
         $attributes                 = array();
         $attributes['data-hash']    = md5($image);
         $attributes['data-desktop'] = N2ImageHelper::fixed($image);

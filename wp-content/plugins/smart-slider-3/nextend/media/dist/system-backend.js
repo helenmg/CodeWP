@@ -3146,7 +3146,6 @@
                     }
                     data.box = box;
 
-
                     data.formData = {path: this.currentPath};
                     data.submit();
                 }, this),
@@ -3155,6 +3154,7 @@
                     data.box.find('.n2-browse-title').html(progress + '%');
                 },
                 done: $.proxy(function (e, data) {
+
                     var response = data.result;
 
                     if (response.data && response.data.name) {
@@ -3166,7 +3166,7 @@
 
                         var ext = response.data.url.split('.').pop();
                         if (ext != 'mp4' && ext != 'mp3') {
-                            box.css('background-image', 'url(' + encodeURI(nextend.imageHelper.fixed(response.data.url)) + ')');
+                            data.box.css('background-image', 'url(' + encodeURI(nextend.imageHelper.fixed(response.data.url)) + ')');
                         }
 
                         if (this.mode == 'multiple') {

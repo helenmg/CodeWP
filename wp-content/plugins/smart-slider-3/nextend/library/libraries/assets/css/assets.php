@@ -17,7 +17,7 @@ class N2AssetsCss extends N2AssetsAbstract {
 
         foreach ($this->urls AS $url) {
             $output .= N2Html::style($url, true, array(
-                    'media' => 'screen, print'
+                    'media' => 'all'
                 )) . "\n";
         }
 
@@ -27,11 +27,11 @@ class N2AssetsCss extends N2AssetsAbstract {
             foreach ($this->getFiles() AS $file) {
                 if (substr($file, 0, 2) == '//') {
                     $output .= N2Html::style($file, true, array(
-                            'media' => 'screen, print'
+                            'media' => 'all'
                         )) . "\n";
                 } else {
                     $output .= N2Html::style(N2Uri::pathToUri($file, false) . '?' . filemtime($file), true, array(
-                            'media' => 'screen, print'
+                            'media' => 'all'
                         )) . "\n";
                 }
             }
@@ -50,7 +50,7 @@ class N2AssetsCss extends N2AssetsAbstract {
 
             if ($mode == 'combine') {
                 $output .= N2Html::style(N2Uri::pathToUri($combinedFile, false), true, array(
-                        'media' => 'screen, print'
+                        'media' => 'all'
                     )) . "\n";
             } else if ($mode == 'async') {
                 N2JS::addInline('window.n2CSS = "' . N2Uri::pathToUri($combinedFile, false) . '";', true, true);

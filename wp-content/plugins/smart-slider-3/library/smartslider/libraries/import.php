@@ -100,7 +100,10 @@ class N2SmartSliderImport {
         foreach ($this->backup->NextendImageManager_ImageData AS $image => $data) {
             $data['tablet']['image'] = $this->fixImage($data['tablet']['image']);
             $data['mobile']['image'] = $this->fixImage($data['mobile']['image']);
-            N2ImageManager::addImageData($this->fixImage($image), $data);
+            $fixedImage              = $this->fixImage($image);
+            if (!N2ImageManager::hasImageData($fixedImage)) {
+                N2ImageManager::addImageData($this->fixImage($image), $data);
+            }
         }
 
         if (empty($this->backup->slider['type'])) {

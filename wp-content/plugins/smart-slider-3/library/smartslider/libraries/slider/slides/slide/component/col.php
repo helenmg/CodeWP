@@ -85,7 +85,7 @@ class N2SSSlideComponentCol extends N2SSSlideComponent {
 
     public function updateRowSpecificProperties($gutter) {
 
-        $this->attributes['style'] .= 'margin-right: ' . $gutter . 'px;margin-top: ' . $gutter . 'px;';
+        $this->attributes['style'] .= 'margin-right: ' . $gutter . 'px;margin-left: ' . $gutter . 'px;margin-top: ' . $gutter . 'px;';
 
     }
 

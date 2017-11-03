@@ -3,9 +3,9 @@
 }
 
 $options = array(
-    'id'  => array(
-        'label' => 'Slider ID',
-        'type'  => 'text',
+    'id' => array(
+        'label' => 'Slider',
+        'type'  => 'smartsliderchooser',
         'value' => ''
     ),
 );

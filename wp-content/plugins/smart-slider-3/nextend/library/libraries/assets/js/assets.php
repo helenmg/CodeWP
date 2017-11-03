@@ -27,7 +27,7 @@ class N2AssetsJs extends N2AssetsAbstract {
             $jsCombined = new N2CacheCombine('js', N2Settings::get('minify-js', '0') ? 'N2MinifierJS::minify' : false);
             foreach ($this->getFiles() AS $file) {
                 if (basename($file) == 'n2.js') {
-                    $output .= N2Html::script('data:text/javascript;base64,' . base64_encode(file_get_contents($file)), true) . "\n";
+                    $output .= N2Html::script('data:text/javascript;base64,' . n2_base64_encode(file_get_contents($file)), true) . "\n";
                 } else {
                     $jsCombined->add($file);
                 }

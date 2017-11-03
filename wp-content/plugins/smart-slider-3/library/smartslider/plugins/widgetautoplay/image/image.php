@@ -42,6 +42,7 @@ class N2SSPluginWidgetAutoplayImage extends N2SSPluginWidgetAbstract {
             self::$key . 'position-',
             'autoplay'
         );
+
         return $positions;
     }
 
@@ -78,7 +79,7 @@ class N2SSPluginWidgetAutoplayImage extends N2SSPluginWidgetAbstract {
         $ext = pathinfo($play, PATHINFO_EXTENSION);
         if (substr($play, 0, 1) == '$' && $ext == 'svg') {
             list($color, $opacity) = N2Color::colorToSVG($playColor);
-            $play = 'data:image/svg+xml;base64,' . base64_encode(str_replace(array(
+            $play = 'data:image/svg+xml;base64,' . n2_base64_encode(str_replace(array(
                     'fill="#FFF"',
                     'opacity="1"'
                 ), array(
@@ -92,7 +93,7 @@ class N2SSPluginWidgetAutoplayImage extends N2SSPluginWidgetAbstract {
         $ext = pathinfo($pause, PATHINFO_EXTENSION);
         if (substr($pause, 0, 1) == '$' && $ext == 'svg') {
             list($color, $opacity) = N2Color::colorToSVG($pauseColor);
-            $pause = 'data:image/svg+xml;base64,' . base64_encode(str_replace(array(
+            $pause = 'data:image/svg+xml;base64,' . n2_base64_encode(str_replace(array(
                     'fill="#FFF"',
                     'opacity="1"'
                 ), array(
@@ -116,24 +117,25 @@ class N2SSPluginWidgetAutoplayImage extends N2SSPluginWidgetAbstract {
             $styleClass = N2StyleRenderer::render($params->get(self::$key . 'style'), 'heading', $slider->elementId, 'div#' . $slider->elementId . ' ');
 
 
+            $isNormalFlow = self::isNormalFlow($params, self::$key);
             list($style, $attributes) = self::getPosition($params, self::$key);
 
 
             N2JS::addInline('new N2Classes.SmartSliderWidgetAutoplayImage("' . $id . '", ' . n2_floatval($params->get(self::$key . 'responsive-desktop')) . ', ' . n2_floatval($params->get(self::$key . 'responsive-tablet')) . ', ' . n2_floatval($params->get(self::$key . 'responsive-mobile')) . ');');
 
             $html = N2Html::tag('div', $displayAttributes + $attributes + array(
-                    'class' => $displayClass . $styleClass . 'nextend-autoplay n2-ib n2-ow nextend-autoplay-image',
-                    'style' => $style,
-                    'role' => 'button',
+                    'class'      => $displayClass . $styleClass . 'nextend-autoplay n2-ow nextend-autoplay-image' . ($isNormalFlow ? '' : 'n2-ib'),
+                    'style'      => $style . ($isNormalFlow ? 'margin-left:auto;margin-right:auto;' : ''),
+                    'role'       => 'button',
                     'aria-label' => 'Pause autoplay'
                 ), N2Html::image($play, 'Play', array(
                     'class'        => 'nextend-autoplay-play n2-ow',
                     'data-no-lazy' => '1',
-                    'tabindex' => '0'
+                    'tabindex'     => '0'
                 )) . N2Html::image($pause, 'Pause', array(
                     'class'        => 'nextend-autoplay-pause n2-ow',
                     'data-no-lazy' => '1',
-                    'tabindex' => '0'
+                    'tabindex'     => '0'
                 )));
         }
 

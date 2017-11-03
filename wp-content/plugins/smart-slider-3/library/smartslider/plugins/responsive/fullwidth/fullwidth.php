@@ -62,6 +62,8 @@ class N2SSResponsiveFullWidth {
 
         $this->responsive->forceFull = intval($this->params->get('responsiveForceFull', 1));
 
-        $this->responsive->forceFullHorizontalSelector = $this->params->get('responsiveForceFullHorizontalSelector', '');
+        $this->responsive->forceFullOverflowX = $this->params->get('responsiveForceFullOverflowX', 'body');
+
+        $this->responsive->forceFullHorizontalSelector = $this->params->get('responsiveForceFullHorizontalSelector', 'body');
     }
 }

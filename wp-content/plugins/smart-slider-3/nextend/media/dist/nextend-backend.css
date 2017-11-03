@@ -5028,7 +5028,7 @@ html[dir="rtl"] .n2-button-menu-open .n2-button-menu {
 
 .n2-box-generator .n2-button-menu-inner{
 	max-height: 150px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 

@@ -303,7 +303,9 @@ h1 {
 .beta,
 h2 {
     font-size: 2em;
+    font-weight:bold;
     line-height: 1.214
+   
 }
 
 .beta+h3,
@@ -597,12 +599,12 @@ body {
 }
 
 .page-template-template-homepage:not(.has-post-thumbnail) .site-main {
-    padding-top: 4.235801032em
+    padding-top: 0.235801em
 }
 
 .page-template-template-homepage .type-page {
-    padding-top: 2.617924em;
-    padding-bottom: 2.617924em;
+    padding-top: 0.617924em;
+    padding-bottom: 0.617924em;
     position: relative
 }
 

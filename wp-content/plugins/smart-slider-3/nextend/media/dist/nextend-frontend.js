@@ -164,6 +164,8 @@ var isRtl = false,
                 previous: 'next',
                 modifier: -1
             };
+        } else {
+            n2('html').attr('dir', 'ltr');
         }
     };
 

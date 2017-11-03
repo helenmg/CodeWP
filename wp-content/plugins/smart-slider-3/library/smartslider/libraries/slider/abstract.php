@@ -24,8 +24,10 @@ abstract class N2SmartSliderAbstract {
 
     public $cacheId = '';
 
+    /** @var  N2Data */
     public $data;
 
+    /** @var  N2Data */
     public $params;
 
     /**
@@ -51,7 +53,7 @@ abstract class N2SmartSliderAbstract {
 
     public $firstSlideIndex = 0;
     /**
-     * @var Mobile_Detect
+     * @var N2MobileDetect
      */
     protected $device;
     /**
@@ -73,6 +75,8 @@ abstract class N2SmartSliderAbstract {
     public $staticHtml = '';
 
     public $isStaticEdited = false;
+
+    private $sliderRow = null;
 
     public function __construct($sliderId, $parameters) {
 
@@ -143,32 +147,45 @@ abstract class N2SmartSliderAbstract {
         $this->params = new N2Data($slider['params'], true);
     }
 
-    public function loadSlider() {
+    public function getSliderFromDB() {
+        if ($this->sliderRow === null) {
+            $slidersModel    = new N2SmartsliderSlidersModel();
+            $this->sliderRow = $slidersModel->get($this->sliderId);
 
-        $slidersModel = new N2SmartsliderSlidersModel();
-        $slider       = $slidersModel->get($this->sliderId);
-        if (empty($slider)) {
+            if (empty($this->sliderRow)) {
+                $this->sliderRow = false;
+            } else {
+
+                if (isset($this->parameters['extend']['sliderData']) && is_array($this->parameters['extend']['sliderData'])) {
+                    $sliderData               = $this->parameters['extend']['sliderData'];
+                    $this->sliderRow['title'] = $sliderData['title'];
+                    unset($sliderData['title']);
+                    $this->sliderRow['type'] = $sliderData['type'];
+                    unset($sliderData['type']);
+
+                    $this->data   = new N2Data($this->sliderRow);
+                    $this->params = new N2Data($sliderData);
+                } else {
+                    $this->data   = new N2Data($this->sliderRow);
+                    $this->params = new N2Data($this->sliderRow['params'], true);
+                }
+            }
+        }
+
+        return $this->sliderRow;
+    }
+
+    private function loadSlider() {
+
+        $sliderRow = $this->getSliderFromDB();
+        if (empty($sliderRow)) {
             return false;
         }
 
-        switch ($slider['type']) {
+        switch ($sliderRow['type']) {
             case 'group':
                 $this->isGroup = true;
                 break;
-        }
-
-        if (isset($this->parameters['extend']['sliderData']) && is_array($this->parameters['extend']['sliderData'])) {
-            $sliderData      = $this->parameters['extend']['sliderData'];
-            $slider['title'] = $sliderData['title'];
-            unset($sliderData['title']);
-            $slider['type'] = $sliderData['type'];
-            unset($sliderData['type']);
-
-            $this->data   = new N2Data($slider);
-            $this->params = new N2Data($sliderData);
-        } else {
-            $this->data   = new N2Data($slider);
-            $this->params = new N2Data($slider['params'], true);
         }
 
         $this->sliderType = $this->getSliderTypeResource('type');
@@ -321,6 +338,25 @@ abstract class N2SmartSliderAbstract {
 
     public function setStatic($isStaticEdited) {
         $this->isStaticEdited = $isStaticEdited;
+    }
+
+    public function canDisplayOnCurrentDevice() {
+        $this->getSliderFromDB();
+        N2Loader::import('libraries.mobiledetect');
+
+        if (N2MobileDetect::$current['isMobile'] && $this->params->get('mobile', '1') == '0') {
+            return false;
+        }
+
+        if (N2MobileDetect::$current['isTablet'] && $this->params->get('tablet', '1') == '0') {
+            return false;
+        }
+
+        if (N2MobileDetect::$current['isDesktop'] && $this->params->get('desktop', '1') == '0') {
+            return false;
+        }
+
+        return true;
     }
 }
 

@@ -162,7 +162,7 @@ class N2SmartsliderBackendSliderControllerAjax extends N2SmartSliderControllerAj
         $this->validateToken();
         $this->validatePermission('smartslider_edit');
 
-        $key = 'http:' . base64_decode(N2Request::getVar('key'));
+        $key = 'http:' . n2_base64_decode(N2Request::getVar('key'));
         if (strpos($key, 'http://smartslider3.com/') !== 0) {
             N2Message::error(sprintf(n2_('Import url is not valid: %s'), $key));
             $this->response->error();

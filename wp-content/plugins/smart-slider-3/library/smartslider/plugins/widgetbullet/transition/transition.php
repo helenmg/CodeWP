@@ -55,6 +55,9 @@ class N2SSPluginWidgetBulletTransition extends N2SSPluginWidgetAbstract {
      * @return string
      */
     static function render($slider, $id, $params) {
+		if (count($slider->slides) <= 1) {
+			return '';
+		}
 
         N2LESS::addFile(N2Filesystem::translate(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'transition' . DIRECTORY_SEPARATOR . 'style.n2less'), $slider->cacheId, array(
             "sliderid" => $slider->elementId
@@ -70,8 +73,7 @@ class N2SSPluginWidgetBulletTransition extends N2SSPluginWidgetAbstract {
         list($style, $attributes) = self::getPosition($params, self::$key);
         $attributes['data-offset'] = $params->get(self::$key . 'position-offset', 0);
 
-        $dots = array();
-
+        $dots = array();        
         for ($i = 0; $i < count($slider->slides); $i++) {
             $dots[] = N2Html::tag('div', array(
                 'class'    => 'n2-ow ' . $bulletStyle,

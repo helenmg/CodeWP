@@ -85,7 +85,7 @@ abstract class N2AssetsAbstract {
     }
 
     public function loadedFilesEncoded() {
-        return base64_encode(json_encode(call_user_func_array('array_merge', $this->files) + $this->urls));
+        return n2_base64_encode(json_encode(call_user_func_array('array_merge', $this->files) + $this->urls));
     }
 
     protected function uniqueFiles() {

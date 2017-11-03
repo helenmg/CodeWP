@@ -49,8 +49,11 @@ N2Require('SmartSliderWidgetAutoplayImage', [], [], function ($, scope, undefine
     };
 
     SmartSliderWidgetAutoplayImage.prototype.loaded = function () {
+
+        this.button.css('display', 'inline-block');
         this.width = this.button.width();
         this.height = this.button.height();
+        this.button.css('display', '');
 
         this.onDevice(null, {device: this.slider.responsive.getDeviceMode()});
 

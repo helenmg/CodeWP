@@ -2,7 +2,7 @@
 
 class N2SS3 {
 
-    public static $version = '3.2.8';
+    public static $version = '3.2.9';
 
     public static $plan = 'pro';
 
@@ -12,26 +12,40 @@ class N2SS3 {
 
     public static $source = '';
 
-    public static function getProUrlHome($params = array()) {
+    public static function applySource(&$params) {
+        static $isSourceSet = false;
+        if (!$isSourceSet) {
+            N2SS3::$plan = 'free';
+            if (defined('SMARTSLIDER3AFFILIATE')) {
+                N2SS3::$source = SMARTSLIDER3AFFILIATE;
+            }
+            N2SS3::$source = apply_filters('smartslider3_hoplink', N2SS3::$source);
+        
+
+        
+            $isSourceSet = true;
+        }
+
         if (!empty(self::$source)) {
             $params['source'] = self::$source;
         }
+    }
+
+    public static function getProUrlHome($params = array()) {
+        self::applySource($params);
 
         return 'https://smartslider3.com/?' . http_build_query($params);
     }
 
     public static function getProUrlPricing($params = array()) {
-        if (!empty(self::$source)) {
-            $params['source'] = self::$source;
-        }
+        self::applySource($params);
 
         return 'https://smartslider3.com/pricing/?' . http_build_query($params);
     }
 
     public static function getWhyProUrl($params = array()) {
-        if (!empty(self::$source)) {
-            $params['source'] = self::$source;
-        }
+        self::applySource($params);
+
         $params['utm_campaign'] = N2SS3::$campaign;
         $params['utm_medium']   = 'smartslider-' . N2Platform::getPlatform() . '-' . N2SS3::$plan;
 
@@ -114,10 +128,3 @@ class N2SS3 {
     public static function initLicense() {
     }
 }
-N2SS3::$plan = 'free';
-if (defined('SMARTSLIDER3AFFILIATE')) {
-    N2SS3::$source = SMARTSLIDER3AFFILIATE;
-}
-N2SS3::$source = apply_filters('smartslider3_hoplink', N2SS3::$source);
-
-

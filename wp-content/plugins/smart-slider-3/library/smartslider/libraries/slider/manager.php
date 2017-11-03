@@ -30,6 +30,12 @@ class N2SmartSliderManager {
     }
 
     public function render($cache = false) {
+
+        if (!$this->slider->isAdmin && N2SmartSliderSettings::get('serversidemobiledetect', '0') == '1') {
+            if (!$this->slider->canDisplayOnCurrentDevice()) {
+                return '';
+            }
+        }
         if (!$cache) {
             return $this->slider->render();
         }

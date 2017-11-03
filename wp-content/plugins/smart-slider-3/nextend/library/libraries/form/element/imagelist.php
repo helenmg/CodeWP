@@ -48,7 +48,7 @@ class N2ElementImageList extends N2ElementRadio
 
                 $ext = pathinfo($image, PATHINFO_EXTENSION);
                 if ($ext == 'svg') {
-                    $image = 'data:image/svg+xml;base64,' . base64_encode(N2Filesystem::readFile(N2Filesystem::getBasePath() . $v));
+                    $image = 'data:image/svg+xml;base64,' . n2_base64_encode(N2Filesystem::readFile(N2Filesystem::getBasePath() . $v));
                 }
 
                 $html .= N2Html::image($image, (string)$option, array('data-image' => $value));

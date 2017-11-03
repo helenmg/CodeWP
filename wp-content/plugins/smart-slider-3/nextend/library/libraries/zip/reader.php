@@ -34,112 +34,123 @@ if (function_exists('zip_open') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
         }
     }
 } else {
+
     class N2ZipReader {
 
+        private $fileHandle, $file;
+
+        public function __construct($file) {
+            $this->file = $file;
+        }
+
         public static function read($path) {
-            $files = array();
+            $zip = new N2ZipReader($path);
 
-            $size = filesize($path);
+            return $zip->extract();
+        }
 
-            // Read file
-            $fh   = fopen($path, "rb");
-            $data = fread($fh, $size);
-            fclose($fh);
+        function extract() {
+            $extractedData = array();
+            if (!$this->file || !is_file($this->file)) return false;
+            $filesize = sprintf('%u', filesize($this->file));
 
-            // Break into sections
-            $filesecta = explode("\x50\x4b\x05\x06", $data);
+            $this->fileHandle = fopen($this->file, 'rb');
+            $fileData         = fread($this->fileHandle, $filesize);
 
-            // ZIP Comment
-            $unpackeda = unpack('x16/v1length', $filesecta[1]);
+            $EofCentralDirData = $this->_findEOFCentralDirectoryRecord($filesize);
+            if (!is_array($EofCentralDirData)) return false;
+            $centralDirectoryHeaderOffset = $EofCentralDirData['centraldiroffset'];
+            for ($i = 0; $i < $EofCentralDirData['totalentries']; $i++) {
+                rewind($this->fileHandle);
+                fseek($this->fileHandle, $centralDirectoryHeaderOffset);
+                $centralDirectoryData = $this->_readCentralDirectoryData();
+                $centralDirectoryHeaderOffset += 46 + $centralDirectoryData['filenamelength'] + $centralDirectoryData['extrafieldlength'] + $centralDirectoryData['commentlength'];
+                if (!is_array($centralDirectoryData) || substr($centralDirectoryData['filename'], -1) == '/') continue;
+                $data = $this->_readLocalFileHeaderAndData($centralDirectoryData);
+                if (!$data) continue;
 
-            // Cut entries from the central directory
-            $filesecta = explode("\x50\x4b\x01\x02", $data);
-            $filesecta = explode("\x50\x4b\x03\x04", $filesecta[0]);
-            array_shift($filesecta); // Removes empty entry/signature
-
-            foreach ($filesecta as $data) {
-                $unpackeda = unpack("v1version/v1general_purpose/v1compress_method/v1file_time/v1file_date/V1crc/V1size_compressed/V1size_uncompressed/v1filename_length", $data);
-
-                // Check for encryption
-                $isEncrypted = (($unpackeda['general_purpose'] & 0x0001) ? true : false);
-
-                // Check for value block after compressed data
-                if ($unpackeda['general_purpose'] & 0x0008) {
-                    $unpackeda2 = unpack("V1crc/V1size_compressed/V1size_uncompressed", substr($data, -12));
-
-                    $unpackeda['crc']               = $unpackeda2['crc'];
-                    $unpackeda['size_compressed']   = $unpackeda2['size_uncompressed'];
-                    $unpackeda['size_uncompressed'] = $unpackeda2['size_uncompressed'];
-
-                    unset($unpackeda2);
-                }
-
-                $error = "";
-                $path  = substr($data, 26, $unpackeda['filename_length']);
-
-                if (substr($path, -1) == "/") // skip directories
-                {
-                    continue;
-                }
-
-                $dir  = dirname($path);
-                $dir  = ($dir == "." ? "" : $dir);
-                $path = basename($path);
-
-                $data = substr($data, 26 + $unpackeda['filename_length']);
-
-                if (strlen($data) != $unpackeda['size_compressed']) {
-                    $error = "Compressed size is not equal to the value given in header.";
-                }
-
-                if ($isEncrypted) {
-                    $error = "Encryption is not supported.";
+                $dir      = dirname($centralDirectoryData['filename']);
+                $fileName = basename($centralDirectoryData['filename']);
+                if ($dir != '.' && $dir != '') {
+                    if (!isset($extractedData[$dir])) {
+                        $extractedData[$dir] = array();
+                    }
+                    $extractedData[$dir][$fileName] = $data;
                 } else {
-                    switch ($unpackeda['compress_method']) {
-                        case 0: // Stored
-                            // Not compressed, continue
-                            break;
-                        case 8: // Deflated
-                            $data = gzinflate($data);
-                            break;
-                        case 12: // BZIP2
-
-                            if (extension_loaded("bz2")) {
-                                $data = bzdecompress($data);
-                            } else {
-                                $error = "Required BZIP2 Extension not available.";
-                            }
-                            break;
-                        default:
-                            $error = "Compression method ({$unpackeda['compress_method']}) not supported.";
-                    }
-
-                    if (!$error) {
-                        if ($data === false) {
-                            $error = "Decompression failed.";
-                        } elseif (strlen($data) != $unpackeda['size_uncompressed']) {
-                            $error = "File size is not equal to the value given in header.";
-                        } elseif (crc32($data) != $unpackeda['crc']) {
-                            $error = "CRC32 checksum is not equal to the value given in header.";
-                        }
-                    }
-                }
-
-                if (!empty($error)) {
-                    throw new Exception($error);
-                }
-
-                if (!empty($dir)) {
-                    if (!isset($files[$dir])) {
-                        $files[$dir] = array();
-                    }
-                    $files[$dir][$path] = $data;
-                } else {
-                    $files[$path] = $data;
+                    $extractedData[$fileName] = $data;
                 }
             }
+            fclose($this->fileHandle);
 
-            return $files;
+            return $extractedData;
+        }
+
+        function _findEOFCentralDirectoryRecord($filesize) {
+            fseek($this->fileHandle, $filesize - 22);
+            $EofCentralDirSignature = unpack('Vsignature', fread($this->fileHandle, 4));
+            if ($EofCentralDirSignature['signature'] != 0x06054b50) {
+                $maxLength = 65535 + 22;
+                $maxLength > $filesize && $maxLength = $filesize;
+                fseek($this->fileHandle, $filesize - $maxLength);
+                $searchPos = ftell($this->fileHandle);
+                while ($searchPos < $filesize) {
+                    fseek($this->fileHandle, $searchPos);
+                    $sigData = unpack('Vsignature', fread($this->fileHandle, 4));
+                    if ($sigData['signature'] == 0x06054b50) {
+                        break;
+                    }
+                    $searchPos++;
+                }
+            }
+            $EofCentralDirData = unpack('vdisknum/vdiskstart/vcentraldirnum/vtotalentries/Vcentraldirsize/Vcentraldiroffset/vcommentlength', fread($this->fileHandle, 18));
+
+            return $EofCentralDirData;
+        }
+
+        function _readCentralDirectoryData() {
+            $centralDirectorySignature = unpack('Vsignature', fread($this->fileHandle, 4));
+            if ($centralDirectorySignature['signature'] != 0x02014b50) return false;
+            $centralDirectoryData = fread($this->fileHandle, 42);
+            $centralDirectoryData = unpack('vmadeversion/vextractversion/vflag/vcompressmethod/vmodtime/vmoddate/Vcrc/Vcompressedsize/Vuncompressedsize/vfilenamelength/vextrafieldlength/vcommentlength/vdiskstart/vinternal/Vexternal/Vlocalheaderoffset', $centralDirectoryData);
+            $centralDirectoryData['filenamelength'] && $centralDirectoryData['filename'] = fread($this->fileHandle, $centralDirectoryData['filenamelength']);
+
+            return $centralDirectoryData;
+        }
+
+        function _readLocalFileHeaderAndData($centralDirectoryData) {
+            fseek($this->fileHandle, $centralDirectoryData['localheaderoffset']);
+            $localFileHeaderSignature = unpack('Vsignature', fread($this->fileHandle, 4));
+            if ($localFileHeaderSignature['signature'] != 0x04034b50) return false;
+            $localFileHeaderData = fread($this->fileHandle, 26);
+            $localFileHeaderData = unpack('vextractversion/vflag/vcompressmethod/vmodtime/vmoddate/Vcrc/Vcompressedsize/Vuncompressedsize/vfilenamelength/vextrafieldlength', $localFileHeaderData);
+            $localFileHeaderData['filenamelength'] && $localFileHeaderData['filename'] = fread($this->fileHandle, $localFileHeaderData['filenamelength']);
+            if (!$this->_checkLocalFileHeaderAndCentralDir($localFileHeaderData, $centralDirectoryData)) return false;
+
+            if ($localFileHeaderData['flag'] & 1) return false;
+            $compressedData = fread($this->fileHandle, $localFileHeaderData['compressedsize']);
+            $data           = $this->_unCompressData($compressedData, $localFileHeaderData['compressmethod']);
+
+            if (crc32($data) != $localFileHeaderData['crc'] || strlen($data) != $localFileHeaderData['uncompressedsize']) return false;
+
+            return $data;
+        }
+
+        function _unCompressData($data, $compressMethod) {
+            if (!$compressMethod) return $data;
+            switch ($compressMethod) {
+                case 8 :
+                    $data = gzinflate($data);
+                    break;
+                default :
+                    return false;
+                    break;
+            }
+
+            return $data;
+        }
+
+        function _checkLocalFileHeaderAndCentralDir($localFileHeaderData, $centralDirectoryData) {
+            return true;
         }
     }
 }

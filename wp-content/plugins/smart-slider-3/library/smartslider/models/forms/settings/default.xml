@@ -15,6 +15,7 @@
         <param type="onoff" name="preview-new-window" label="Open preview in new window" default="0"/>
         <param type="onoff" name="editor-icon" label="Show editor icon" default="1"/>
         <param type="onoff" name="wp-adminbar" label="Show in WordPress admin bar" default="1"/>
+        <param type="onoff" name="force-rtl-backend" label="Force Joomla RTL backend" default="0"/>
     </params>
     <params name="reponsive" label="Responsive mode">
         <param type="radio" label="Based on" name="responsive-basedon" default="combined">
@@ -54,6 +55,7 @@
                 <unit>%</unit>
             </param>
         </param>
+        <param type="onoff" name="serversidemobiledetect" label="Server side mobile detect" default="0"/>
     </params>
     <params name="cache" label="Cache">
         <param type="button" label="Clear" name="clear-cache" default="Clear cache">
