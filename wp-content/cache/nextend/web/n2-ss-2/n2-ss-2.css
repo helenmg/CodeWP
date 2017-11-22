@@ -765,7 +765,7 @@ div#n2-ss-2 .n2-ss-background-animation .tile {
   outline: 1px solid rgba(0,0,0,0);
 }
 div#n2-ss-2 {
-  width: 1400px;
+  width: 1300px;
   float: left;
 }
 html[dir="rtl"] div#n2-ss-2 {
@@ -777,7 +777,7 @@ div#n2-ss-2 .n2-ss-slider-1 {
   padding-right: 0px;
   padding-bottom: 0px;
   padding-left: 0px;
-  height: 800px;
+  height: 783px;
   border-style: solid;
   border-width: 0px;
   border-color: #3E3E3E;
@@ -843,8 +843,8 @@ div#n2-ss-2 .n2-ss-slide {
 }
 div#n2-ss-2 .n2-ss-layers-container {
   position: relative;
-  width: 1400px;
-  height: 800px;
+  width: 1300px;
+  height: 783px;
 }
 div#n2-ss-2 .n2-ss-parallax-clip > .n2-ss-layers-container {
   position: absolute;
